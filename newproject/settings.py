@@ -95,6 +95,9 @@ DATABASES = { 'default': { 'ENGINE': 'django.db.backends.mysql',
 'HOST':'database-1.cbdidwlgizt5.ap-south-1.rds.amazonaws.com',
 'PORT':'3306',
 'PASSWORD':'Pass1234',
+'OPTIONS': {
+            'sql_mode': 'traditional',
+        }
     } 
         }
 

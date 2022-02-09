@@ -211,7 +211,6 @@ def login_attempt(request):
     return render(request,'accounts/login.html')
 
 def login_otp(request):
-    print(url_list1)
     last_url = url_list1[-1]
     mobile = request.session['mobile']
     context = {'mobile':mobile}
@@ -2273,8 +2272,6 @@ def GetData(request):
     return render(request,'user/home/index.html')
 
 def Appview(request):
-    myurl = request.path
-    obj = myurl.split('/')
-    if obj.index('app-view'):
-        templates = 'app-view/user/home/index.html'
+    
+    templates = 'app-view/user/home/index.html'
     return render(request,templates)
