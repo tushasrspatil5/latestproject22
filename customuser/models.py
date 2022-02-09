@@ -6,9 +6,9 @@ from django.contrib.auth.models import User
 
 
 class Profile(models.Model):
-    user = models.CharField(max_length=20)
+    user = models.CharField(max_length=40)
     mobile = models.CharField(max_length=20)
-    otp = models.CharField(max_length=6)
+    otp = models.CharField(max_length=8)
     def __str__(self):
         return self.mobile
 
@@ -78,8 +78,8 @@ class user_type(models.Model):
             return User.get_email(self.user) + " - is_delivery"
 
 class Shop(models.Model):
-    name = models.CharField(max_length=30)
-    store_user = models.CharField(max_length=30)
+    name = models.CharField(max_length=40)
+    store_user = models.CharField(max_length=40)
     lat = models.FloatField()
     lon = models.FloatField()
     city = models.TextField()
@@ -98,13 +98,13 @@ class Cities(models.Model):
     city_name = models.TextField()
     dist = models.TextField()
     # country = models.CharField(max_length = 200)
-    state = models.CharField(max_length = 200)
+    state = models.CharField(max_length = 30)
     def __str__(self):
         return self.city_name
 
 class Image(models.Model):
-    user = models.CharField(max_length=30)
-    store_user = models.CharField(max_length=30)
+    user = models.CharField(max_length=40)
+    store_user = models.CharField(max_length=40)
     date = models.DateTimeField(default=datetime.now, blank=True)
     image = models.ImageField(upload_to='images')
     desc = models.TextField()
@@ -112,8 +112,8 @@ class Image(models.Model):
         return str(self.user) 
 
 class Prescription(models.Model):
-    sender = models.CharField(max_length=30)
-    reciver = models.CharField(max_length=30)
+    sender = models.CharField(max_length=40)
+    reciver = models.CharField(max_length=40)
     date = models.DateTimeField(default=datetime.now, blank=True)
     image1 = models.ImageField(upload_to='images',default='default.jpg')
     image2 = models.ImageField(upload_to='images',default='default.jpg')
@@ -131,9 +131,9 @@ class PersonalDetails(models.Model):
     """docstring for Cities"""
     fname = models.CharField(max_length = 15)
     lname = models.CharField(max_length = 15)
-    username = models.CharField(max_length = 30)
+    username = models.CharField(max_length = 40)
     mob = models.CharField(max_length = 13)
-    email = models.CharField(max_length = 30)
+    email = models.CharField(max_length = 40)
     city = models.TextField()
     state = models.TextField()
     address = models.TextField()
@@ -146,9 +146,9 @@ class Notification(models.Model):
     title = models.TextField()
     message = models.TextField()
     viewed = models.BooleanField(default = False)
-    sender = models.CharField(max_length = 30)
+    sender = models.CharField(max_length = 40)
     date = models.DateTimeField(default=datetime.now, blank=True)
-    reciver = models.CharField(max_length = 30)
+    reciver = models.CharField(max_length = 40)
     def __str__(self):
         return str(self.sender) + '  ' + str(self.reciver)
     def save(self, *args, **kwargs):
@@ -185,8 +185,8 @@ class Product(models.Model):
         return super(Product, self).save(*args, **kwargs)
 
 class PlacedOrders(models.Model):
-    customername = models.CharField(max_length = 30)
-    username = models.CharField(max_length = 30)
+    customername = models.CharField(max_length = 40)
+    username = models.CharField(max_length = 40)
     items = models.TextField()
     inbox_items = models.TextField()
     address = models.TextField()
@@ -211,17 +211,17 @@ class GetDeliveries(models.Model):
     respondstatus = models.CharField(max_length=20)
     is_reached_store = models.BooleanField(default = False)
     is_reached_user = models.BooleanField(default = False)
-    customername = models.CharField(max_length = 30)
+    customername = models.CharField(max_length = 40)
     customeraddress = models.TextField()
     customermobile = models.CharField(max_length= 20)
-    storeuser = models.CharField(max_length = 30)
+    storeuser = models.CharField(max_length = 40)
     store_name = models.TextField()
     storeaddress = models.TextField()
     storemobile = models.CharField(max_length = 20)
     storecity = models.TextField()
     storedistance = models.CharField(max_length = 20)
     delivername = models.TextField()
-    deliverusername= models.CharField(max_length=30)
+    deliverusername= models.CharField(max_length=40)
     delivermobile = models.CharField(max_length = 20)
     pricestatus = models.BooleanField(default = False)
     price = models.IntegerField()
@@ -234,8 +234,8 @@ class GetDeliveries(models.Model):
 class Orders(models.Model):
     orderid = models.CharField(max_length = 20)
     razorpay_order_id=models.CharField(max_length = 20)
-    c_username = models.CharField(max_length = 30)
-    s_username = models.CharField(max_length=30)
+    c_username = models.CharField(max_length = 40)
+    s_username = models.CharField(max_length=40)
     images_id = models.CharField(max_length = 20)
     items = models.TextField()
     inbox_items = models.TextField()
@@ -257,7 +257,7 @@ class Orders(models.Model):
     filled_otp=models.BooleanField(default = False)
     # dist_d_to_s = models.CharField(max_length=2000)
     
-    d_username = models.CharField(max_length = 30) 
+    d_username = models.CharField(max_length = 40) 
     deliver_status = models.BooleanField(default = False)
     is_timeup = models.BooleanField(default=False)
     order_picked = models.BooleanField(default = False)
@@ -308,7 +308,7 @@ class NotificationReminder(models.Model):
     
     
 class DeliveryPartner(models.Model):
-    username = models.CharField(max_length=30)
+    username = models.CharField(max_length=40)
     address = models.TextField()
     city = models.TextField()
     lat = models.CharField(max_length=20)
@@ -322,7 +322,7 @@ class DeliveryPartner(models.Model):
 
 class SavedAddress(models.Model):
     date = models.DateTimeField(default=datetime.now, blank=True)
-    username= models.CharField(max_length=30)
+    username= models.CharField(max_length=40)
     landmark = models.CharField(max_length=20)
     room_no = models.CharField(max_length=20)
     def __str__(self):

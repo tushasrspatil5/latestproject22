@@ -233,75 +233,79 @@ def login_otp(request):
 
 # Common-Data Sharing
 def common(request):
-    notification_url = '/'
-    fname = ' '
-    lname = ' '
-    app_user_type = None
-    noti_len = 0
-    prof_fname = None
-    prof_lname =None
+    items = 'it'
+    return {items}
+# def common(request):
+#     notification_url = '/'
+#     fname = ' '
+#     lname = ' '
+#     app_user_type = None
+#     noti_len = 0
+#     prof_fname = None
+#     prof_lname =None
     
-    usermail = ''
-    name= 'Welcome'
-    my_url = request.path
-    home_step = ''
-    myorder_step = ''
-    if my_url == '/':
-        home_step = 'active'
+#     usermail = ''
+#     name= 'Welcome'
+#     my_url = request.path
+#     home_step = ''
+#     myorder_step = ''
+#     if my_url == '/':
+#         home_step = 'active'
 
-    if my_url == '/myorders':
-        myorder_step = 'active'
-        bag_bg_clr = '#89dee2;'
-    else:
-        bag_bg_clr = 'black;'
+#     if my_url == '/myorders':
+#         myorder_step = 'active'
+#         bag_bg_clr = '#89dee2;'
+#     else:
+#         bag_bg_clr = 'black;'
     
-    if request.user.is_authenticated and user_type.objects.exists():
-        username = request.user
-        prof_fname = PersonalDetails.objects.filter(username=str(username))[0].fname
-        prof_lname = PersonalDetails.objects.filter(username=str(username))[0].lname
+#     if request.user.is_authenticated and user_type.objects.exists():
+#         username = request.user
+#         prof_fname = PersonalDetails.objects.filter(username=str(username))[0].fname
+#         prof_lname = PersonalDetails.objects.filter(username=str(username))[0].lname
     
-    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_delivery==True:
-        noti_len = Orders.objects.filter(deliver_status = False).count()
-        app_user_type = 'deliver'
-        user = request.user
-        myname = PersonalDetails.objects.filter(username = user)
-        fname = myname[0].fname
-        lname = myname[0].lname
-        usermail = str(request.user)
-        name = str(fname) + str(' ') + str(lname)
+#     if request.user.is_authenticated:
+#         if user_type.objects.get(user=request.user).is_delivery==True:
+#             noti_len = Orders.objects.filter(deliver_status = False).count()
+#             app_user_type = 'deliver'
+#             user = request.user
+#             myname = PersonalDetails.objects.filter(username = user)
+#             fname = myname[0].fname
+#             lname = myname[0].lname
+#             usermail = str(request.user)
+#             name = str(fname) + str(' ') + str(lname)
 
-    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
-        notification_url = 'users-notifications'
-        noti_len = Orders.objects.filter(order_completed = False).filter(c_username=str(request.user)).count()
-        app_user_type = 'customer'
-        user = request.user
-        myname = PersonalDetails.objects.filter(username = user)
-        fname = myname[0].fname
-        lname = myname[0].lname
-        usermail = str(request.user)
-        name = str(fname) + str(' ') + str(lname)
-        if request.POST.get('input_city_name'):
-            current_city = request.POST.get('input_city_name')
-        else:
-            uname = request.user
-            current_user = PersonalDetails.objects.filter(username= uname)
-            current_city = str(current_user[0].city)
-    else:
-        if request.POST.get('input_city_name'):
-            current_city = request.POST.get('input_city_name')
-        else:
-            current_city = "Search Location"
+#     if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
+#         notification_url = 'users-notifications'
+#         noti_len = Orders.objects.filter(order_completed = False).filter(c_username=str(request.user)).count()
+#         app_user_type = 'customer'
+#         user = request.user
+#         myname = PersonalDetails.objects.filter(username = user)
+#         fname = myname[0].fname
+#         lname = myname[0].lname
+#         usermail = str(request.user)
+#         name = str(fname) + str(' ') + str(lname)
+#         if request.POST.get('input_city_name'):
+#             current_city = request.POST.get('input_city_name')
+#         else:
+#             uname = request.user
+#             current_user = PersonalDetails.objects.filter(username= uname)
+#             current_city = str(current_user[0].city)
+#     else:
+#         if request.POST.get('input_city_name'):
+#             current_city = request.POST.get('input_city_name')
+#         else:
+#             current_city = "Search Location"
 
-    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_store==True:
-        notification_url = 'store-notifications'
-        noti_len = Orders.objects.filter(order_accept_status = 'not_responded').count()
-        usermail = str(request.user)
-        app_user_type = 'store_owner'
+#     if request.user.is_authenticated and user_type.objects.get(user=request.user).is_store==True:
+#         notification_url = 'store-notifications'
+#         noti_len = Orders.objects.filter(order_accept_status = 'not_responded').count()
+#         usermail = str(request.user)
+#         app_user_type = 'store_owner'
 
-    return {
-        'current_city':current_city,'fname':fname,'app_user_type':app_user_type,'noti_len':noti_len,'prof_lname':prof_lname,
-        'prof_fname':prof_fname,'name':name,'usermail':usermail,'home_step':home_step,'myorder_step':myorder_step,
-        'bag_bg_clr':bag_bg_clr,'notification_url':notification_url,'lname':lname,} 
+#     return {
+#         'current_city':current_city,'fname':fname,'app_user_type':app_user_type,'noti_len':noti_len,'prof_lname':prof_lname,
+#         'prof_fname':prof_fname,'name':name,'usermail':usermail,'home_step':home_step,'myorder_step':myorder_step,
+#         'bag_bg_clr':bag_bg_clr,'notification_url':notification_url,'lname':lname,} 
 
 
 my_len = []
