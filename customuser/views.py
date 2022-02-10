@@ -119,7 +119,6 @@ def home(request):
         return render(request,'user/home/index.html',context)
 
 def send_otp(mobile, otp):
-    print("FUNCTION CALLED")
     account_sid = "AC8c55da658680546cd2f069c440eb8629"
     auth_token = "ec07b7a628608ff0ce668cdafcb54024"
     client = Client(account_sid, auth_token)
@@ -233,79 +232,76 @@ def login_otp(request):
 
 # Common-Data Sharing
 def common(request):
-    items = 'it'
-    return {items}
-# def common(request):
-#     notification_url = '/'
-#     fname = ' '
-#     lname = ' '
-#     app_user_type = None
-#     noti_len = 0
-#     prof_fname = None
-#     prof_lname =None
+    notification_url = '/'
+    fname = ' '
+    lname = ' '
+    app_user_type = None
+    noti_len = 0
+    prof_fname = None
+    prof_lname =None
     
-#     usermail = ''
-#     name= 'Welcome'
-#     my_url = request.path
-#     home_step = ''
-#     myorder_step = ''
-#     if my_url == '/':
-#         home_step = 'active'
+    usermail = ''
+    name= 'Welcome'
+    my_url = request.path
+    home_step = ''
+    myorder_step = ''
+    if my_url == '/':
+        home_step = 'active'
 
-#     if my_url == '/myorders':
-#         myorder_step = 'active'
-#         bag_bg_clr = '#89dee2;'
-#     else:
-#         bag_bg_clr = 'black;'
+    if my_url == '/myorders':
+        myorder_step = 'active'
+        bag_bg_clr = '#89dee2;'
+    else:
+        bag_bg_clr = 'black;'
     
-#     if request.user.is_authenticated and user_type.objects.exists():
-#         username = request.user
-#         prof_fname = PersonalDetails.objects.filter(username=str(username))[0].fname
-#         prof_lname = PersonalDetails.objects.filter(username=str(username))[0].lname
+    if request.user.is_authenticated and user_type.objects.exists():
+        username = request.user
+        prof_fname = PersonalDetails.objects.filter(username=str(username))[0].fname
+        prof_lname = PersonalDetails.objects.filter(username=str(username))[0].lname
     
-#     if request.user.is_authenticated:
-#         if user_type.objects.get(user=request.user).is_delivery==True:
-#             noti_len = Orders.objects.filter(deliver_status = False).count()
-#             app_user_type = 'deliver'
-#             user = request.user
-#             myname = PersonalDetails.objects.filter(username = user)
-#             fname = myname[0].fname
-#             lname = myname[0].lname
-#             usermail = str(request.user)
-#             name = str(fname) + str(' ') + str(lname)
+    if request.user.is_authenticated:
+        if user_type.objects.get(user=request.user).is_delivery==True:
+            noti_len = Orders.objects.filter(deliver_status = False).count()
+            app_user_type = 'deliver'
+            user = request.user
+            myname = PersonalDetails.objects.filter(username = user)
+            fname = myname[0].fname
+            lname = myname[0].lname
+            usermail = str(request.user)
+            name = str(fname) + str(' ') + str(lname)
 
-#     if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
-#         notification_url = 'users-notifications'
-#         noti_len = Orders.objects.filter(order_completed = False).filter(c_username=str(request.user)).count()
-#         app_user_type = 'customer'
-#         user = request.user
-#         myname = PersonalDetails.objects.filter(username = user)
-#         fname = myname[0].fname
-#         lname = myname[0].lname
-#         usermail = str(request.user)
-#         name = str(fname) + str(' ') + str(lname)
-#         if request.POST.get('input_city_name'):
-#             current_city = request.POST.get('input_city_name')
-#         else:
-#             uname = request.user
-#             current_user = PersonalDetails.objects.filter(username= uname)
-#             current_city = str(current_user[0].city)
-#     else:
-#         if request.POST.get('input_city_name'):
-#             current_city = request.POST.get('input_city_name')
-#         else:
-#             current_city = "Search Location"
+    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
+        notification_url = 'users-notifications'
+        noti_len = Orders.objects.filter(order_completed = False).filter(c_username=str(request.user)).count()
+        app_user_type = 'customer'
+        user = request.user
+        myname = PersonalDetails.objects.filter(username = user)
+        fname = myname[0].fname
+        lname = myname[0].lname
+        usermail = str(request.user)
+        name = str(fname) + str(' ') + str(lname)
+        if request.POST.get('input_city_name'):
+            current_city = request.POST.get('input_city_name')
+        else:
+            uname = request.user
+            current_user = PersonalDetails.objects.filter(username= uname)
+            current_city = str(current_user[0].city)
+    else:
+        if request.POST.get('input_city_name'):
+            current_city = request.POST.get('input_city_name')
+        else:
+            current_city = "Search Location"
 
-#     if request.user.is_authenticated and user_type.objects.get(user=request.user).is_store==True:
-#         notification_url = 'store-notifications'
-#         noti_len = Orders.objects.filter(order_accept_status = 'not_responded').count()
-#         usermail = str(request.user)
-#         app_user_type = 'store_owner'
+    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_store==True:
+        notification_url = 'store-notifications'
+        noti_len = Orders.objects.filter(order_accept_status = 'not_responded').count()
+        usermail = str(request.user)
+        app_user_type = 'store_owner'
 
-#     return {
-#         'current_city':current_city,'fname':fname,'app_user_type':app_user_type,'noti_len':noti_len,'prof_lname':prof_lname,
-#         'prof_fname':prof_fname,'name':name,'usermail':usermail,'home_step':home_step,'myorder_step':myorder_step,
-#         'bag_bg_clr':bag_bg_clr,'notification_url':notification_url,'lname':lname,} 
+    return {
+        'current_city':current_city,'fname':fname,'app_user_type':app_user_type,'noti_len':noti_len,'prof_lname':prof_lname,
+        'prof_fname':prof_fname,'name':name,'usermail':usermail,'home_step':home_step,'myorder_step':myorder_step,
+        'bag_bg_clr':bag_bg_clr,'notification_url':notification_url,'lname':lname,} 
 
 
 my_len = []
@@ -746,7 +742,6 @@ def UserLogin(request):
             login(request, user)
             return redirect('/')
         else:
-            print('Error')
             messages.error(request, "Invalid credentials! Please try again")
             return redirect("/user-login")
     else:
@@ -839,7 +834,6 @@ def ForgetPassword(request):
             return redirect('/forget-password/')
     
     except Exception as e:
-        print(e)
     return render(request , 'shops/forget-password.html')
 
 def ChangePassword(request , token):
@@ -864,7 +858,6 @@ def ChangePassword(request , token):
             user_obj.save()
             return redirect('/login/')        
     except Exception as e:
-        print(e)
     return render(request , 'shops/change-password.html' , context)
 
 def Send_Notification(request):
@@ -907,7 +900,6 @@ def get_users_notifications(request):
                 which_color = '#C0C0C0;'
             else:
                 which_color = '#F5F5F5;'
-
             # Time Ago 
             time = i.date.strftime('%H:%M:%S')
             date = i.date.date()
@@ -1014,7 +1006,6 @@ def notification_view(request):
                 # text = f"You have Rejected delivery request of {which_user}"
                 myurl = request.path
                 obj = myurl.split('/')
-                print('hello ',obj)
                 try:
                     obj.index('app-view') 
                     return redirect(f"/app-view/store-order-response/{DataId}")
@@ -1379,7 +1370,6 @@ def MyOrders(request):
     if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
         if request.method == 'POST':
             input_id = request.POST.get('inputid')
-            print(input_id)
             Orders.objects.filter(id =input_id).update(is_cancelled = True)
         data = Orders.objects.filter(c_username = str(request.user)).order_by('-date')[:5]
         for i in data:
@@ -2061,8 +2051,6 @@ def handlerequest(request):
             # result = razorpay_client.utility.verify_payment_signature(params_dict)
             util = razorpay.Utility(client)
             util.verify_payment_signature(params_dict)
-
-            print(util.verify_payment_signature(params_dict))
             if util is None:
                 amount = 20000  # Rs. 200
                 try:
@@ -2272,7 +2260,6 @@ def Select_Location_Store(request):
 def GetData(request):
     if request.is_ajax():
         username = request.POST.get('data')
-        print(username) 
     return render(request,'user/home/index.html')
 
 def Appview(request):
