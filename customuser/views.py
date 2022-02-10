@@ -834,6 +834,7 @@ def ForgetPassword(request):
             return redirect('/forget-password/')
     
     except Exception as e:
+        pass
     return render(request , 'shops/forget-password.html')
 
 def ChangePassword(request , token):
@@ -858,6 +859,7 @@ def ChangePassword(request , token):
             user_obj.save()
             return redirect('/login/')        
     except Exception as e:
+        pass
     return render(request , 'shops/change-password.html' , context)
 
 def Send_Notification(request):
@@ -2263,6 +2265,5 @@ def GetData(request):
     return render(request,'user/home/index.html')
 
 def Appview(request):
-    
     templates = 'app-view/user/home/index.html'
     return render(request,templates)
