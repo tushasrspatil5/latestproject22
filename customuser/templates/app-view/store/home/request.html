@@ -18,6 +18,24 @@
 <div class="container-fluid px-3 mt-5">
 <div class='card h-100 p-3'>
     <ul class="noti_bar" id="noti_bar">
+      {%for i in messages_list %}
+      <li class='mb-2 mt-1'>
+        <a class='dropdown-item border-radius-md' href='/app-view/store-notification/details/{{i.senderId}}/{{i.id}}'>
+          <div class='d-flex py-1'>
+            <div class='my-auto'>
+              <img src='/media/{{i.photo}}' class='avatar avatar-sm  me-3 '>
+            </div>
+            <div class='d-flex flex-column justify-content-center'>
+              <h6 class='text-sm font-weight-normal mb-1'>
+                <span class='font-weight-bold'>Request</span> from {{i.sender}}</h6>
+              <p class='text-xs text-secondary mb-0'>
+                <i class='fa fa-clock me-1'></i>{{i.date}}</p>
+            </div>
+          </div>
+        </a>
+        </li>
+        <hr style='padding:0px;margin:0px;'>
+      {%endfor%}
       </ul>
     </div>
 </div>
@@ -40,41 +58,9 @@
 
 <!-- Specific JS goes HERE --> 
 {% block javascripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
 <script>
-    $(document).ready(function () {
-  setInterval(function () {
-    $.ajax({
-      type: 'GET',
-      url: "/get_users_notifications",
-      success: function (response) {
-        // console.log(response);
-        $("#noti_bar").empty();
-        for (var key in response.messages1) 
-        {
-          var temp = `<li class=;mb-2'>
-          <a class='dropdown-item border-radius-md' href='/app-view/store-notification/details/${response.messages1[key].senderId}/${response.messages1[key].id}'>
-            <div class='d-flex py-1'>
-              <div class='my-auto'>
-                <img src='/media/${response.messages1[key].photo}' class='avatar avatar-sm  me-3 '>
-              </div>
-              <div class='d-flex flex-column justify-content-center'>
-                <h6 class='text-sm font-weight-normal mb-1'>
-                  <span class='font-weight-bold'>Request</span> from ${response.messages1[key].sender}</h6>
-                <p class='text-xs text-secondary mb-0'>
-                  <i class='fa fa-clock me-1'></i>
-                  ${response.messages1[key].date}
-                </p>
-              </div>
-            </div>
-          </a>
-          </li>
-          <hr style='padding:0px;margin:0px;'>`
-          $("#noti_bar").append(temp)
-        }
-      },});
-  },5000);
-})
+  
 </script>
 
 {% endblock javascripts %}

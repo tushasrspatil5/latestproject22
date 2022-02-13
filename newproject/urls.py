@@ -70,6 +70,7 @@ urlpatterns = [
     # Profile ---
     path('users/<str:fname>-<str:lname>/profile',views.MyProfile,name='MyProfile'),
     path('users/myprofile',views.NewMyProfile,name='NewMyProfile'),
+    path('my-addresses',views.MyAddresses,name='app-view/my-addresses'),
     path('users/<str:fname>-<str:lname>/profile/my-addresses',views.MyAddress,name='MyAddress'),
     path('delivery-partner-response/<int:myid>',views.DeliveryPartnerResponse,name='DeliveryPartnerResponse'),
     
@@ -99,6 +100,9 @@ urlpatterns = [
     path('app-view/users-notification/details/<str:current_user>/<int:myid>',views.UsersNotificationDetails,name="UsersNotificationDetails"),
     path('app-view/myorders',views.MyOrders,name='app-view/myorders'),
     path('app-view/order-tracker/<int:myid>',views.OrderTracker,name='app-view/order-tracker'),
+
+    path('app-view/user/profile',views.AppMyProfile,name='MyProfile'),
+    path('app-view/my-addresses',views.MyAddresses,name='app-view/my-addresses'),
     
     #For Store
     path('app-view/store-notifications',views.StoreNotifications,name='store-notifications'),

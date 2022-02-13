@@ -439,7 +439,7 @@ background: #fff;
 <div class="container-fluid">
   <br>
 
-    <button type="button" class="btn btn-block bg-gradient-info mb-3 btn_1 mt-5" data-bs-toggle="modal" data-bs-target="#modalAddProduct">Add More Products</button>
+  <button type="button" class="btn btn-block bg-gradient-info mb-3 btn_1 mt-5" data-bs-toggle="modal" data-bs-target="#modalAddProduct">Add More Products</button>
     <!-- Modal Content -->
     <div class="modal fade" id="modalAddProduct" tabindex="-1" role="dialog" aria-hidden="true"
         style="position: absolute;width: 100%;height:100%;bottom:0px;">
@@ -533,6 +533,8 @@ background: #fff;
             </table>
         </div> -->
     <br>
+  
+
     <!-- Add New Address -->
     <button type="button" class="btn btn-block mb-3 bg-gradient-info btn_2" data-bs-toggle="modal" data-bs-target="#modalSignUp" onclick="AddressList()">Select Address</button>
     <!-- Modal Content -->
@@ -793,7 +795,7 @@ document.getElementById('OldAddress').innerHTML = NewHtml;
 </script>
 
 
-//Address List
+
 <script>
 InAddress = {}
     function AddingAddress(){
@@ -832,15 +834,15 @@ function AddressList(){
                 mydata = response.addresslist
                 $("#addlist").empty();
                 for (var key in mydata) {
-                    var temp = `<p type='button' id=${key} class='adds'><i class="fa fa-map-marker"></i>&nbsp;
-                        ${mydata[key].floor_no} , ${mydata[key].landmark}</p>`
+                    var temp = `<p type='button' id=${key} class='adds'>
+                    <i class="fa fa-map-marker"></i>&nbsp;
+                        ${mydata[key].floor_no} , ${mydata[key].landmark}</p>
+                        `
                 $("#addlist").append(temp)
                 }
             }
         });
 }
-
-
 $('#addlist').on('click', '.adds', function () {
     var inputs = document.querySelectorAll('.adds');   
         for (var i = 0; i < inputs.length; i++) {   

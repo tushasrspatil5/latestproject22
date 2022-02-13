@@ -91,9 +91,9 @@ WSGI_APPLICATION = 'newproject.wsgi.application'
 
 
 DATABASES = { 'default': { 'ENGINE': 'django.db.backends.mysql',
-'NAME': 'db2',
+'NAME': 'db1',
 'USER': 'admin', 
-'HOST':'database-2.cbdidwlgizt5.ap-south-1.rds.amazonaws.com',
+'HOST':'database-1.cbdidwlgizt5.ap-south-1.rds.amazonaws.com',
 'PORT':'3306',
 'PASSWORD':'Pass1234',
 'OPTIONS': {

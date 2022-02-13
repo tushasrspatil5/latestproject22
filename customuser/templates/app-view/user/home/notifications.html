@@ -13,9 +13,29 @@
 </style>
 {% endblock stylesheets %}
 {% block content %}
-<div class="container-fluid px-3 mt-5">
+<div class="container-fluid  mt-5">
 <div class='card h-100 p-3'>
     <ul class="noti_bar" id="noti_bar">
+      {%for i in messages_list %}
+      <li class='mb-2'>
+          <a class='dropdown-item border-radius-md' href='/app-view/users-notification/details/{{i.senderId}}/{{i.id}}'>
+            <div class='d-flex py-1'>
+              <div class='my-auto'>
+                <img src='/media/{{i.photo}}' class='avatar avatar-sm  me-3 '>
+              </div>
+              <div class='d-flex flex-column justify-content-center'>
+                <h6 class='text-sm font-weight-normal mb-1'>
+                  <span class='font-weight-bold'>Notification</span> from {{i.sender}}</h6>
+                <p class='text-xs text-secondary mb-0'>
+                  <i class='fa fa-clock me-1'></i>
+                  {{i.date}}
+                </p>
+              </div>
+            </div>
+          </a>
+          </li>
+          {%endfor%}
+          <hr style='padding:0px;margin:0px;'>
       </ul>
     </div>
 </div>
@@ -41,41 +61,42 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
  
 <script>
+//     $(document).ready(function () {
+//   setInterval(function () {
+//     $.ajax({
+//       type: 'GET',
+//       url: "/get_users_notifications",
+//       success: function (response) {
+//         // console.log(response);
+//         $("#noti_bar").empty();
+//         for (var key in response.noti_for_users) 
+//         {
+//           var temp = `
+//           <li class=;mb-2'>
+//           <a class='dropdown-item border-radius-md' href='/app-view/users-notification/details/${response.noti_for_users[key].senderId}/${response.noti_for_users[key].id}'>
+//             <div class='d-flex py-1'>
+//               <div class='my-auto'>
+//                 <img src='/media/${response.noti_for_users[key].photo}' class='avatar avatar-sm  me-3 '>
+//               </div>
+//               <div class='d-flex flex-column justify-content-center'>
+//                 <h6 class='text-sm font-weight-normal mb-1'>
+//                   <span class='font-weight-bold'>Notification</span> from ${response.noti_for_users[key].sender}</h6>
+//                 <p class='text-xs text-secondary mb-0'>
+//                   <i class='fa fa-clock me-1'></i>
+//                   ${response.noti_for_users[key].date
+//         }
+//                 </p>
+//               </div>
+//             </div>
+//           </a>
+//           </li>
+//           <hr style='padding:0px;margin:0px;'>`
+//           $("#noti_bar").append(temp)
+//         }
+//       },});
+//   },1000);
+// })
 
-    $(document).ready(function () {
-  setInterval(function () {
-    $.ajax({
-      type: 'GET',
-      url: "/get_users_notifications",
-      success: function (response) {
-        // console.log(response);
-        $("#noti_bar").empty();
-        for (var key in response.noti_for_users) 
-        {
-          var temp = `<li class=;mb-2'>
-          <a class='dropdown-item border-radius-md' href='/app-view/users-notification/details/${response.noti_for_users[key].senderId}/${response.noti_for_users[key].id}'>
-            <div class='d-flex py-1'>
-              <div class='my-auto'>
-                <img src='/media/${response.noti_for_users[key].photo}' class='avatar avatar-sm  me-3 '>
-              </div>
-              <div class='d-flex flex-column justify-content-center'>
-                <h6 class='text-sm font-weight-normal mb-1'>
-                  <span class='font-weight-bold'>Notification</span> from ${response.noti_for_users[key].sender}</h6>
-                <p class='text-xs text-secondary mb-0'>
-                  <i class='fa fa-clock me-1'></i>
-                  ${response.noti_for_users[key].date
-        }
-                </p>
-              </div>
-            </div>
-          </a>
-          </li>
-          <hr style='padding:0px;margin:0px;'>`
-          $("#noti_bar").append(temp)
-        }
-      },});
-  },1000);
-})
-</script>
+// </script>
 
 {% endblock javascripts %}

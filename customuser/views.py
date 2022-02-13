@@ -1046,6 +1046,40 @@ def notification_view(request):
 
 @login_required(redirect_field_name='next',login_url = '/login')
 def StoreNotifications(request):
+    type_obj = user_type.objects.get(user=request.user)
+    if request.user.is_authenticated and type_obj.is_store==True:
+        is_store = True
+        allObj = Orders.objects.filter(s_username=request.user)
+        latestObj = allObj.order_by('-date')[:5]
+        messages1 = []
+        my_dict = {}
+        items = []
+        for i in latestObj:  
+            sendername = str(PersonalDetails.objects.filter(username=i.c_username)[0].fname) + str(' ') + str(PersonalDetails.objects.filter(username=i.c_username)[0].lname)
+            shopob = Shop.objects.filter(store_user=request.user)
+            photo = shopob[0].storephoto 
+            if i.order_accept_status == 'not_responded':
+                which_color = '#C0C0C0;'
+            else:
+                which_color = '#F5F5F5;'
+            # Time Ago 
+            time = i.date.strftime('%H:%M:%S')
+            date = i.date.date()
+            mixed = str(date) + str(time)
+            time_ago = timeago(f"{str(date)} {str(time)}").ago
+            # create dictionary
+            my_dict = {
+                'senderId':i.c_username,
+                'sender':sendername,
+                'reciver':i.s_username,
+                'id':i.id,
+                'date':time_ago,
+                'message':i.store_notification_1,
+                 'photo':str(photo),
+                'which_color':which_color,
+            }
+            messages1.append(my_dict)
+            
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -1054,9 +1088,45 @@ def StoreNotifications(request):
     except:          
         templates = 'store/home/request.html'
 
-    return render(request,templates)
+    context = {'messages_list':messages1} 
+    return render(request,templates,context)
 
 def UsersNotifications(request):
+    # Notifications for users
+    type_obj = user_type.objects.get(user=request.user)
+    if request.user.is_authenticated and type_obj.is_user==True:
+        is_user = True
+        objs =  my_notif = Orders.objects.filter(c_username=request.user).order_by('-date')[:5]
+        messages1 = []
+        my_dict = {}
+        items = []
+        new_data = None
+        for i in objs:  
+            sendername = str(PersonalDetails.objects.filter(username=i.s_username)[0].fname) + str(' ') + str(PersonalDetails.objects.filter(username=i.s_username)[0].lname)
+            if i.order_completed == False:
+                which_color = '#C0C0C0;'
+            else:
+                which_color = '#F5F5F5;'
+
+            shopob = Shop.objects.filter(store_user=i.s_username)
+            photo = shopob[0].storephoto
+             # Time Ago 
+            time = i.date.strftime('%H:%M:%S')
+            date = i.date.date()
+            mixed = str(date) + str(time)
+            time_ago = timeago(f"{str(date)} {str(time)}").ago
+
+            my_dict = {
+                'sender':sendername,
+                'senderId':i.s_username,
+                'reciver':i.c_username,
+                'id':i.id,
+                'date':time_ago,
+                'message':f'You have recied notification for order id DH231K{i.id}',
+                'which_color':which_color,
+                'photo':str(photo),
+            }
+            messages1.append(my_dict)
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -1064,7 +1134,9 @@ def UsersNotifications(request):
         templates = 'app-view/user/home/notifications.html'
     except:          
         templates = 'user/home/notifications.html'
-    return render(request,templates)
+
+    context = {'messages_list':messages1}
+    return render(request,templates,context)
 
 def notification_view_details(request,current_user,myid):
     type_obj = user_type.objects.get(user=request.user)
@@ -1361,10 +1433,66 @@ def MyProfile(request,fname,lname):
     context = {'name':name,'usermail':usermail,'city':city,'fname':fname,'lname':lname,'address':address,
     'mobile':mobile,
     }
-    return render(request,'user/home/profile.html',context)
+    myurl = request.path
+    obj = myurl.split('/')
+    try:
+        obj.index('app-view') 
+        templates = 'app-view/user/home/profile.html'
+    except:          
+        templates = 'user/home/profile.html'
+    return render(request,templates,context)
     
+def AppMyProfile(request):
+    if request.method == 'POST':
+        fname = request.POST.get('fname')
+        lname = request.POST.get('lname')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        mobile = request.POST.get('mobile')
+        PersonalDetails.objects.filter(username = str(request.user)).update(fname = fname,lname =lname,
+        mob= mobile,city = city,address = address)
+        return redirect(f'/users/{fname}-{lname}/profile')
+        
+    user = request.user
+    myname = PersonalDetails.objects.filter(username = user)
+    address = myname[0].address
+    city = myname[0].city
+    fname = myname[0].fname
+    lname = myname[0].lname
+    usermail = str(request.user)
+    name = str(fname) + str(' ') + str(lname)
+    mobile = myname[0].mob
+
+    context = {'name':name,'usermail':usermail,'city':city,'fname':fname,'lname':lname,'address':address,
+    'mobile':mobile,
+    }
+    templates = 'app-view/user/home/profile.html'
+    return render(request,templates,context)
+    
+
+
 def NewMyProfile(request):
-    return render(request,'shops/demo1.html')
+    context = 'items'
+    myurl = request.path
+    obj = myurl.split('/')
+    try:
+        obj.index('app-view') 
+        templates = 'app-view/user/home/my-addresses.html'
+    except:          
+        templates = 'user/home/my-addresses.html'
+    return render(request,templates,context)
+
+@login_required(redirect_field_name='next',login_url = '/login')
+def MyAddresses(request):
+    context = {'items':'item'}
+    myurl = request.path
+    obj = myurl.split('/')
+    try:
+        obj.index('app-view') 
+        templates = 'app-view/user/home/my-addresses.html'
+    except:          
+        templates = 'user/home/my-addresses.html'
+    return render(request,templates,context)
 
 @login_required(redirect_field_name='next',login_url = '/login')
 def MyOrders(request):
