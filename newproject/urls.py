@@ -100,9 +100,10 @@ urlpatterns = [
     path('app-view/users-notification/details/<str:current_user>/<int:myid>',views.UsersNotificationDetails,name="UsersNotificationDetails"),
     path('app-view/myorders',views.MyOrders,name='app-view/myorders'),
     path('app-view/order-tracker/<int:myid>',views.OrderTracker,name='app-view/order-tracker'),
-
     path('app-view/user/profile',views.AppMyProfile,name='MyProfile'),
     path('app-view/my-addresses',views.MyAddresses,name='app-view/my-addresses'),
+    path('app-view/register-delivery-partner',views.RegisterDeliveryPartner, name='register-delivery-partner'),
+    path('app-view/add-your-chemiest',views.AddYourChemist,name='add-your-chemiest'),
     
     #For Store
     path('app-view/store-notifications',views.StoreNotifications,name='store-notifications'),

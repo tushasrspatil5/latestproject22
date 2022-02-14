@@ -2096,11 +2096,23 @@ def RegisterDeliveryPartner(request):
             image.name = name
         if request.POST.get('agree_conditions'):
             is_agree = request.POST.get('agree_conditions')
-        
+
         DeliveryPartner(username=str(request.user),city=select_city,selfie = image,adhar =adhar_doc).save()
-        return redirect('/')    
+          
+        try:
+            obj.index('app-view') 
+            return redirect('/app-view/home')  
+        except:     
+            return redirect('/')  
         
-    return render(request,'shops/register_delivery.html')
+    myurl = request.path
+    obj = myurl.split('/')
+    try:
+        obj.index('app-view') 
+        url_path = 'app-view/user/home/register-delivery-partner.html'
+    except:          
+        url_path = 'user/home/register-delivery-partner.html'
+    return render(request,url_path)
 
 @login_required(redirect_field_name='next',login_url = '/login')
 def AddYourChemist(request):
@@ -2118,9 +2130,23 @@ def AddYourChemist(request):
             mobile=storemobile,address=storeaddress,pay_phone=storemobile,storelicence=storelicence,
             storeadhar=storeadhar,storepan=storepan,storephoto=storephoto).save()
         messages.success(request,'Thanks for joined with us.we will inform you very soon.')
-        return redirect('/')
-            
-    return render(request,'shops/add_chemist.html')
+
+        myurl = request.path
+        obj = myurl.split('/')
+        try:
+            obj.index('app-view') 
+            return redirect('/app-view/home')
+        except:          
+            return redirect('/')
+    
+    myurl = request.path
+    obj = myurl.split('/')
+    try:
+        obj.index('app-view') 
+        url_path = 'app-view/user/home/add-chemist.html'
+    except:          
+        url_path = 'user/home/add-chemist.html'
+    return render(request,url_path)
 
 # from . import utility
 # class Utility(object):
