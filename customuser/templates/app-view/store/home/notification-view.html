@@ -520,6 +520,7 @@ label.radio input:checked+span::before {
   <div class="row ">
    <div class="p-3 text-center text-white text-lg bg-dark rounded-top">
     <span class="text-uppercase">Product Details</span></div>
+
    <div class="col-lg-7 mb-lg-0 mb-4">        
               <div class="card">
                <h6>Prescriptions</h6>
@@ -579,6 +580,16 @@ label.radio input:checked+span::before {
            </div>
          </div>
          {%endif%}
+
+        
+<!-- {%if IsIns %} -->
+<div class="col-12">
+  <div class="card mb-4">
+    <div class="card-header pb-0">
+      <p><span class="font-weight-bold">Instructions:</span> {{instructions}}</p>
+</div></div></div>
+<!-- {%endif%} -->
+
   <div class='card h-100 p-3 '>
       <div class="row">
         <div class="col-lg-7 mb-lg-0 mb-4">
@@ -608,24 +619,17 @@ label.radio input:checked+span::before {
   </div>
 </div>
 <div class="row mt-4">
-
   <div class="col-lg-7 mb-lg-0 mb-4">
     <div class="chat_page">
       <div id="display" class="notification_bar_details mt-5">
       </div>
-
       <div id="notification_for_user" class="notification_bar_details mt-5">
       </div>
     </div>
-
   </div>
-
   <br>
-
-
   <hr class="line1">
   {% include "includes/footer.html" %}
-
 </div>
 
 {% endblock content %}

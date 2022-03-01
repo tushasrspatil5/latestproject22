@@ -6,7 +6,7 @@
 <style>
     .input_product {
         font-size: 12px;
-        paddding-left: 30px;
+        pding-left: 30px;
         margin-left: 22px;
         min-width: 200px;
         width: auto;
@@ -430,6 +430,11 @@ background: #fff;
     margin-right: auto;
     margin-top:7px;
 }
+#sign_in_loader {
+    height: 14px !important;
+    width: 14px;
+    margin-left: 10px;
+  }
 </style>
 {% endblock stylesheets %}
 {% block content %}
@@ -543,6 +548,7 @@ background: #fff;
                 <div class="modal-body px-md-5">
                     <div class="col-lg-12 sec_div">
                         <div class="card h-100 p-3" id="OldAddress">
+                            
                             <h4>Saved Address <span onclick="AddNewAddress()" type='button'>+ Add New Address</span></h4>
                           <form method="post">
                             <div id="addlist">
@@ -576,7 +582,7 @@ background: #fff;
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
 <script>
     // GET ALL THE INPUT ELEMENTS.
@@ -789,8 +795,6 @@ document.getElementById('OldAddress').innerHTML = NewHtml;
     }
 </script>
 
-
-//Address List
 <script>
 InAddress = {}
     function AddingAddress(){
@@ -868,5 +872,17 @@ function AddressListRefresh(){
         window.location = '/checkout'; 
     }
 }
+
+$('#continue_btn').click(function () {
+  document.getElementById('continue_btn').innerHTML = `Processing..<span class="spinner-border" role="status" 
+    id='sign_in_loader'>
+  </span>`
+  });
+
+  $('#add_button').click(function () {
+  document.getElementById('add_button').innerHTML = `Adding..<span class="spinner-border" role="status" 
+    id=''>
+  </span>`
+  });
 </script>
 {% endblock javascripts %}

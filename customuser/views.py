@@ -152,7 +152,7 @@ def register(request):
         user.last_name= lname
         user.mobile = mobile
         user.save()
-        new_user = PersonalDetails(fname=fname,lname=lname,username=email,email=email,mob=mobile)
+        new_user = PersonalDetails(fname=fname,lname=lname,username=email,email=email,mob=mobile,lat=0,lon=0)
         new_user.save()
         current_user=User.objects.get(email=username)
         user_type(user=current_user,is_user = True).save()
@@ -303,7 +303,6 @@ def common(request):
         'prof_fname':prof_fname,'name':name,'usermail':usermail,'home_step':home_step,'myorder_step':myorder_step,
         'bag_bg_clr':bag_bg_clr,'notification_url':notification_url,'lname':lname,} 
 
-
 my_len = []
 my_len2  = []
 my_len3 = []
@@ -386,9 +385,6 @@ def CheckNOfitication(request):
             pass
         my_len5.append(RejectedObjs.count())
 
-
-   
- 
     #Third Notification
         ThirdObjs = AllObjs.filter(is_parsel_uploaded = True)
         try:
@@ -457,7 +453,6 @@ def UploadPrescriptions(request):
         return redirect('/list-stores')
     else:
         return HttpResponse("Please login first")
-
     # return render(request,'shops/upload_prescription.html')                                   
 
 @login_required(redirect_field_name='next',login_url = '/login')                
@@ -518,10 +513,8 @@ def upload(request,myid):
             new_data = Prescription(sender= request.user,reciver = store_user,
             image1=item[0],message = 'You have got request for medicines')
             new_data.save()
-
         return redirect('/checkout')
-        
-
+    
     # Upload images from gallary--
     elif request.method == 'POST':
         data = request.FILES.getlist("images")
@@ -706,7 +699,7 @@ def StoreList(request):
 @login_required(redirect_field_name='next',login_url = '/login')
 def medical_store_view(request,myid,st_name,st_dist):
     data = Shop.objects.filter(id = myid)
-    distance = st_dist
+    distance = st_dist[1:]
     name = data[0].name
     store_user = data[0].store_user
     city_name = data[0].city
@@ -714,10 +707,11 @@ def medical_store_view(request,myid,st_name,st_dist):
     id_ = myid
     if request.method == 'POST':
         display_type = request.POST.get('is_conditions' or None)    
-        myfile = request.FILES["image_file"]
+        myfile = request.FILES["image_file"] 
         user_id = request.user
         saved = Image(image=myfile,user=request.user,store_user=store_user)
         saved.save()
+
     else:
         pass
 
@@ -863,7 +857,7 @@ def ChangePassword(request , token):
     return render(request , 'shops/change-password.html' , context)
 
 def Send_Notification(request):
-    pass        
+           
 # def Send_Notification(request):
 #     import os
 #     from twilio.rest import Client
@@ -876,6 +870,7 @@ def Send_Notification(request):
 #                          from_='+14433414796',
 #                          to='+919108085748'
 #                      ) 
+    pass
    
 @login_required(redirect_field_name='next',login_url = '/login')
 def show_notifications(request,user_name):
@@ -1183,40 +1178,49 @@ def notification_view_details(request,current_user,myid):
             text = 'You have rejected delivery request'  
         data = []
         reqeust_sender = order_details[0].c_username
-        all_data = Image.objects.filter(store_user=request.user).filter(user=current_user).order_by('-date')
-        last_item = Image.objects.filter(user=reqeust_sender).filter(store_user=request.user).last()
-        last_time = last_item.date
-        last_time = last_time.strftime('%H:%M:%S')
-        for i in all_data:
-            if i.date.strftime('%H:%M:%S')[:5] == last_time[:5]:
-                if len(i.desc) < 2:
-                    i.desc = ""
-                    data.append(i)
-                else:
-                    data.append(i)
+        images_data = ''
+        try:
+            all_data = Image.objects.filter(store_user=request.user).filter(user=current_user).order_by('-date')
+            last_item = Image.objects.filter(user=reqeust_sender).filter(store_user=request.user).last()
+            last_time = last_item.date
+            last_time = last_time.strftime('%H:%M:%S')
+            for i in all_data:
+                if i.date.strftime('%H:%M:%S')[:5] == last_time[:5]:
+                    if len(i.desc) < 2:
+                        i.desc = ""
+                        data.append(i)
+                    else:
+                        data.append(i)
+            pres_data = Prescription.objects.filter(id=images_id)
+            IsIns = False
+            instructions = pres_data[0].desc
+            if len(instructions) > 5:
+                IsIns = True    
+            pers_dict = {}
+            for pers in pres_data:
+                if pers.image1 != 'default.jpg':
+                    pers_dict[0] = pers.image1            
+                if pers.image2 != 'default.jpg':
+                    pers_dict[1] = pers.image2 
+                if pers.image3 != 'default.jpg':           
+                    pers_dict[2] = pers.image3 
+                if pers.image4 != 'default.jpg':
+                    pers_dict[3] = pers.image4 
+                if pers.image5 != 'default.jpg':
+                    pers_dict[4] = pers.image5
+            images_data = []
+            for img in range(len(pers_dict)):
+                images_data.append(pers_dict[img])
+            
+        except:
+            pass
 
         IsAccepted = order_details[0]
-        pres_data = Prescription.objects.filter(id=images_id)
-        pers_dict = {}
-        for pers in pres_data:
-            if pers.image1 != 'default.jpg':
-                pers_dict[0] = pers.image1            
-            if pers.image2 != 'default.jpg':
-                pers_dict[1] = pers.image2 
-            if pers.image3 != 'default.jpg':           
-                pers_dict[2] = pers.image3 
-            if pers.image4 != 'default.jpg':
-                pers_dict[3] = pers.image4 
-            if pers.image5 != 'default.jpg':
-                pers_dict[4] = pers.image5
-        images_data = []
-        for img in range(len(pers_dict)):
-            images_data.append(pers_dict[img])
-
     context = {
         'data':data,'new_data':new_data,'type_obj':type_obj,'myid':myid,'text':text,'Is_responsed':Is_responsed,
         'ResponStatus':ResponStatus, 'items_list':items_list,'cart_items':cart_items,
-        'IsAccepted':IsAccepted,'Items_show':Items_show, 'images_data':images_data}
+        'IsAccepted':IsAccepted,'Items_show':Items_show, 'images_data':images_data,
+        'IsIns':IsIns,'instructions':instructions}
     
     myurl = request.path
     obj = myurl.split('/')
@@ -1292,6 +1296,7 @@ def UsersNotificationDetails(request,current_user,myid):
     return render(request,url_path,params)
 
 item_list = []
+pres_list = []
 @login_required(redirect_field_name='next',login_url = '/login')
 def CheckOut(request):
     myurl = request.path
@@ -1326,25 +1331,50 @@ def CheckOut(request):
     username = request.user
     IsOldCustomer = None
     OldCheckout = None
-    last_id = Prescription.objects.filter(sender = request.user).last().id
-    pres_data = Prescription.objects.filter(id=last_id)
-    pers_dict = {}  
-    for pers in pres_data:
-        if pers.image1 != 'default.jpg':
-            pers_dict[0] = pers.image1            
-        if pers.image2 != 'default.jpg':
-            pers_dict[1] = pers.image2 
-        if pers.image3 != 'default.jpg':           
-            pers_dict[2] = pers.image3 
-        if pers.image4 != 'default.jpg':
-            pers_dict[3] = pers.image4 
-        if pers.image5 != 'default.jpg':
-            pers_dict[4] = pers.image5
-    images_data = []
-    for img in range(len(pers_dict)):
-        images_data.append(pers_dict[img])
+    pres_data = None
+    pred_id = ''
+    images_data = None
 
-    pred_id = pres_data[0].id
+    # Without Prescription
+    
+    if request.POST.get('selected_store'):
+        storeid = request.POST.get('selected_store')
+        current_data=Shop.objects.filter(id = int(storeid))
+        store_user = current_data[0].store_user
+        reciver = store_user
+        pres_list.append(reciver)
+
+    try: 
+        reciver = pres_list[-1]
+        if len(pres_list) > 5:
+            pres_list.pop(0)
+    except:
+        reciver = pres_list
+   
+    try:
+        last_id = Prescription.objects.filter(sender = request.user).last().id
+        pres_data = Prescription.objects.filter(id=last_id)
+        pers_dict = {}  
+        for pers in pres_data:
+            if pers.image1 != 'default.jpg':
+                pers_dict[0] = pers.image1            
+            if pers.image2 != 'default.jpg':
+                pers_dict[1] = pers.image2 
+            if pers.image3 != 'default.jpg':           
+                pers_dict[2] = pers.image3 
+            if pers.image4 != 'default.jpg':
+                pers_dict[3] = pers.image4 
+            if pers.image5 != 'default.jpg':
+                pers_dict[4] = pers.image5
+        images_data = []
+        for img in range(len(pers_dict)):
+            images_data.append(pers_dict[img])
+        pred_id = pres_data[0].id
+        reciver = Prescription.objects.filter(id= pred_id)[0].reciver
+    except:
+        pass
+
+
     FullName = ''
     if Orders.objects.filter(c_username = request.user).exists():
         PersName = PersonalDetails.objects.filter(username = request.user)[0]
@@ -1355,7 +1385,7 @@ def CheckOut(request):
     else:
         IsOldCustomer = False
 
-    if request.POST:
+    if request.POST.get('selected_address'):
         selected_address = request.POST.get('selected_address')
         selected_products = request.POST.get('selected_products')   
         ob = SavedAddress.objects.filter(username=str(request.user))[int(selected_address)]
@@ -1369,7 +1399,6 @@ def CheckOut(request):
         new_inbox_items = selected_products
         # Creating new_inbox_items 
         store_noti_1 = 'You have got request for medicines'
-        reciver = Prescription.objects.filter(id= pred_id)[0].reciver
         if customername == '':   
             if Orders.objects.filter(c_username=username).exists():
                 PrevOrder = Orders.objects.filter(c_username=str(request.user)).last()
@@ -1484,7 +1513,33 @@ def NewMyProfile(request):
 
 @login_required(redirect_field_name='next',login_url = '/login')
 def MyAddresses(request):
-    context = {'items':'item'}
+    myid = request.POST.get('confirmed_delete')
+    print(myid)
+    sel_add_list = []
+    if request.POST.get('confirmed_delete'):
+        myid = request.POST.get('confirmed_delete')
+        print(myid)
+        SavedAddress.objects.filter(id=myid).delete()
+
+    if request.POST.get('addressvalue'):
+        sel_id = request.POST.get('addressvalue')
+        floorno = request.POST.get('floorno')
+        landmark = request.POST.get('landmark')
+        SavedAddress.objects.filter(id=sel_id).update(landmark = landmark, room_no = floorno)
+    if request.is_ajax():
+        sel_id = request.POST.get('data')
+        selected_address = SavedAddress.objects.filter(id=sel_id)
+        sel_add_dict = {'lm': selected_address[0].landmark,
+        'rn': selected_address[0].room_no,
+        }
+        sel_add_list.append(sel_add_dict)
+        return JsonResponse({'selected_address':sel_add_list})
+    try:
+        addresses = SavedAddress.objects.filter(username = str(request.user))
+    except:
+        pass
+        addresses = ''
+    context = {'items':'item','addresses':addresses}
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -1500,7 +1555,21 @@ def MyOrders(request):
     if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
         if request.method == 'POST':
             input_id = request.POST.get('inputid')
-            Orders.objects.filter(id =input_id).update(is_cancelled = True)
+            ord = Orders.objects.filter(id =input_id)
+            time = ord[0].date.strftime('%H:%M:%S')
+            date = ord[0].date.date()
+            mixed = str(date) + str(time)
+            time_ago = timeago(f"{str(date)} {str(time)}").ago
+            try:
+                if time_ago.split(' ')[1] == 'minutes':
+                    if int(time_ago.split(' ')[0]) > 5:
+                        pass
+                    else: 
+                        ord.update(is_cancelled = True)
+                        # Calling Send Notification function to store ...
+                        
+            except:
+                pass
         data = Orders.objects.filter(c_username = str(request.user)).order_by('-date')[:5]
         for i in data:
             ShopOb = Shop.objects.get(store_user = i.s_username)
@@ -1552,7 +1621,7 @@ def ProductView(request,myid):
         'safety_info':safety_info,'ingradients':ingradients,'Item':Item,
         })
 
-# def GetDelivery(request):
+#  def GetDelivery(request):
 #     shop_list = Shop.objects.all()
 #     request_list = Orders.objects.all()
 #     current_deliver = PersonalDetails.objects.filter(username=request.user)
@@ -1793,24 +1862,28 @@ def OrderTracker(request,myid):
         DeliverName = None
 
         DeliverMobile = None
-    pres_id = data.images_id
-    pres_data = Prescription.objects.filter(id=pres_id)
-    pers_dict = {}
-    for pers in pres_data:
-        if pers.image1 != 'default.jpg':
-            pers_dict[0] = pers.image1            
-        if pers.image2 != 'default.jpg':
-            pers_dict[1] = pers.image2 
-        if pers.image3 != 'default.jpg':           
-            pers_dict[2] = pers.image3 
-        if pers.image4 != 'default.jpg':
-            pers_dict[3] = pers.image4 
-        if pers.image5 != 'default.jpg':
-            pers_dict[4] = pers.image5
-    images_data = []
-    for img in range(len(pers_dict)):
-        images_data.append(pers_dict[img])
-  
+    images_data = ''        
+    try:
+        pres_id = data.images_id
+        pres_data = Prescription.objects.filter(id=pres_id)
+        pers_dict = {}
+        for pers in pres_data:
+            if pers.image1 != 'default.jpg':
+                pers_dict[0] = pers.image1            
+            if pers.image2 != 'default.jpg':
+                pers_dict[1] = pers.image2 
+            if pers.image3 != 'default.jpg':           
+                pers_dict[2] = pers.image3 
+            if pers.image4 != 'default.jpg':
+                pers_dict[3] = pers.image4 
+            if pers.image5 != 'default.jpg':
+                pers_dict[4] = pers.image5
+        images_data = []
+        for img in range(len(pers_dict)):
+            images_data.append(pers_dict[img])
+    except:
+        pass
+
     if data.order_accept_status == 'accepted':
         order_status = 'completed'
     else:
@@ -1839,7 +1912,7 @@ def OrderTracker(request,myid):
     else:
         order_completed = " "
     
-    num_of_pers = len(pers_dict)
+    # num_of_pers = len(pers_dict)
     inbox_items = data.inbox_items
     prod_dict = {}
     prod_list = []
@@ -1883,7 +1956,7 @@ def OrderTracker(request,myid):
     else:
         pay_mode = 'Incomplete'
     params = {'data':data,'prod_list':prod_list,'inbox_items':inbox_items,'myid':myid,'items_list':items_list, 
-    'num_of_pers':num_of_pers,'images_data':images_data,'ShopName':ShopName,'DeliverName':DeliverName,'Items_show':Items_show,
+   'images_data':images_data,'ShopName':ShopName,'DeliverName':DeliverName,'Items_show':Items_show,
     'order_reached':order_reached,'order_on_way':order_on_way,'DeliverMobile':DeliverMobile,'DeliveryDate':DeliveryDate,
     'picked_order':picked_order,'order_status':order_status,'Order_Id':myid,'order_completed':order_completed,'pay_mode':pay_mode,
     }
@@ -2147,14 +2220,12 @@ def AddYourChemist(request):
     except:          
         url_path = 'user/home/add-chemist.html'
     return render(request,url_path)
-
 # from . import utility
 # class Utility(object):
 #     def __init__(self,client = None):
 #         self.client = client
 
 client = razorpay.Client(auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
-
 razorpay_client = razorpay.Client(auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
 
 @login_required(redirect_field_name='next',login_url = '/login')
@@ -2399,6 +2470,7 @@ def Select_Location_Store(request):
             'address':i.address,
             'id':i.pk,
             }
+
             new_list.append(my_list)
         new_list.sort(key=lambda x: x["distance"])
         context = {'new_list':new_list}

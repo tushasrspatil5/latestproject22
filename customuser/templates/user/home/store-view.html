@@ -129,6 +129,22 @@
 
             </div>
         </div>
+
+        <div class="container-fluid ">
+            <div class="col-12 mt-4">
+              <div class="card mb-4">
+                <div class="image_upload_block2">
+                    <form action="/checkout" method="post">
+                        {%csrf_token%}
+                <span>
+                    <input type="hidden" name="selected_store" value="{{myid}}">
+                    <input type="hidden" name="not_pres" value="NoPres">
+                  <button id='upload_button2'>Add Products</button></span>
+                  </form>
+                  </div>
+          </div>
+            </div>
+          </div>
     </div>
 
 

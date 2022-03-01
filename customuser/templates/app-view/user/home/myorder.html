@@ -93,7 +93,7 @@
                                     {%else%}
                                     <td class="align-middle text-center text-sm " style="font-size: 12px;"
                                         data-bs-toggle="modal" data-bs-target="#modalConfirmDelete">
-                                        <span class="badge badge-sm bg-primary p-2" type='button'>Cancel Order</span>
+                                        <span class="cancel_ord badge badge-sm bg-primary p-2" type='button' id="{{i.id}}">Cancel Order</span>
                                     </td>
                                     {%endif%}
                                     <!--Modal: modalConfirmDelete-->
@@ -110,9 +110,11 @@
                                                 <div class="modal-body">
                                                     <form method="post">
                                                         {%csrf_token%}
-                                                        <input type="hidden" value="{{i.id}}" name='inputid' id="inputid">
-                                                        <button class="btn  btn-outline-danger" type="submit">Yes</button>
-                                                    </form> 
+                                                        <input type="hidden" value="" name='inputid'
+                                                            id="inputid">
+                                                        <button class="btn  btn-outline-danger"
+                                                            type="submit">Yes</button>
+                                                    </form>
                                                     <p type="button" class="btn  btn-danger waves-effect"
                                                         data-bs-dismiss="modal" aria-label="Close">No</p>
                                                 </div>
@@ -156,5 +158,9 @@
 
 <script>
 
+$('.cancel_ord').on('click', function () {
+var clickedid= this.id;
+document.getElementById('inputid').value = clickedid;
+});
 </script>
 {% endblock javascripts %}

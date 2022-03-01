@@ -95,7 +95,6 @@ display: none;
 {% endblock stylesheets %}
 {% block content %}
 <br>
-
   <div class="col-lg-5">
     <div class="card h-100 p-3">
       <div class="overflow-hidden position-relative border-radius-lg bg-cover h-100" style="background-image: url('/static/assets/img/bg_medical.jpg');">
@@ -112,19 +111,18 @@ display: none;
     </div>
   </div>
 </div>
-    <div class="container-fluid ">
-        <div class="col-12 mt-4">
-          <div class="card mb-4">
-            <div class="image_upload_block2">
-              <span>
-                <a href="home/select-location">
-                  <p>Place your order via prescriptions</p> 
-                  <button id='upload_button2'>
-                    <i class="fa fa-paperclip"></i>&nbsp;Upload</button></a></span>
-                  </div>
-          </div>
+<div class="container-fluid ">
+  <div class="col-12 mt-4">
+    <div class="card mb-4">
+      <div class="image_upload_block2">
+      <span>
+      <a href="/app-view/home/select-location">
+        <p> We'll Deliver It At Your Doorstep Safely</p> 
+        <button id='upload_button2'>Order Medicines</button></a></span>
         </div>
-      </div>
+</div>
+  </div>
+</div>
      
       {% include "includes/footer.html" %}  
     

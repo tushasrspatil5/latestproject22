@@ -264,6 +264,7 @@
     const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
     var lat =  position.coords.latitude;
     var lon = position.coords.longitude;
+    console.log(lat,lon)
     $.ajax({
         type: 'POST',
         url: '/detect-users-location',
