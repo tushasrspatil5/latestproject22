@@ -1,5 +1,5 @@
 {% extends 'app-view/user/layouts/base.html' %}
-{% block title %} Deliver-Requests {% endblock title %}
+{% block title %} Notification-View {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
@@ -273,10 +273,10 @@
 </style>
 {% endblock stylesheets %}
 {% block content %}
-<div class="container-fluid px-3 mt-5">
-  <div class='card h-100 p-3'>
-    <div class="chat_page">
-      <div class="row mt-4">
+<div class="container-fluid  mt-1 p-1">
+  <div class='card h-100 p-0'>
+    <div class="chat_page p-0">
+      <div class="row ">
         <div class="col-lg-7 mb-lg-0 mb-4">
           <div class="">
             <div class="chat_page">
@@ -293,7 +293,7 @@
                   <span class="msg_time"><i class='fa fa-clock me-1'></i>{{UsersNotifications.date}}</span>
                 </p>
                 <div id='track_order'>
-                  <a href='/order-tracker/{{UsersNotifications.id}}'>
+                  <a href='/app-view/order-tracker/{{UsersNotifications.id}}'>
                     <p class='btn btn-outline w-100'> <i class="fa fa-truck mr-2"></i> Track Order </p>
                   </a>
                 </div>
@@ -337,15 +337,7 @@
       </div>
     </div>
   </div>
-  <div class='card h-100 p-3 mt-3'>
-    <div class="row">
-      <div class="col-lg-7 mb-lg-0 mb-4">
-        <div class="p-3">
-
-        </div>
-      </div>
-    </div>
-  </div>
+ 
 </div>
 </div>
 

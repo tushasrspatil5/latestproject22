@@ -1513,8 +1513,6 @@ def NewMyProfile(request):
 
 @login_required(redirect_field_name='next',login_url = '/login')
 def MyAddresses(request):
-    myid = request.POST.get('confirmed_delete')
-    print(myid)
     sel_add_list = []
     if request.POST.get('confirmed_delete'):
         myid = request.POST.get('confirmed_delete')

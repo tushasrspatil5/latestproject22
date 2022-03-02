@@ -8,6 +8,7 @@
 .noti_bar{
     list-style-type: none;
     margin-top: 10px;
+    padding:0px;
 }
 
 @media screen and (max-width: 990px) {
@@ -15,8 +16,8 @@
 </style>
 {% endblock stylesheets %}
 {% block content %}
-<div class="container-fluid px-3 mt-5">
-<div class='card h-100 p-3'>
+<div class="container-fluid p-1 ">
+<div class='card h-100'>
     <ul class="noti_bar" id="noti_bar">
       {%for i in messages_list %}
       <li class='mb-2 mt-1'>
