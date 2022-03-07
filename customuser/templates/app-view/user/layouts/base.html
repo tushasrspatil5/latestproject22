@@ -73,11 +73,13 @@
 </head>
 <body class="g-sidenav-show  bg-gray-100">
  
-  <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg ">
+  <main class="main-content position-relative  mt-1 border-radius-lg ">
 
 
     {% block content %}{% endblock content %}
   </main>
+
+
   {% include "includes/fixed-plugin.html" %}
   {% include "includes/scripts.html" %}
 
@@ -124,6 +126,7 @@ $.ajax({
 }
 
 //Back Button show
+try{
 var myele = window.location.href;
         if (myele != 'http://www.tabmedico.com') {
           document.getElementById('back_arrow').style.display = 'block';
@@ -131,6 +134,11 @@ var myele = window.location.href;
         else{
           document.getElementById('back_arrow').style.display = 'none';
         }
+      }
+      catch(err) {
+      console.log(err);
+      }
+
 
     var win = navigator.platform.indexOf('Win') > -1;
     if (win && document.querySelector('#sidenav-scrollbar')) {

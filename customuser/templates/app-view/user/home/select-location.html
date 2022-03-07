@@ -186,7 +186,7 @@
                             </div>
                         </div>
                         <hr>
-                        <p>Recent locations </p>
+                        <!-- <p>Recent locations </p>
                         <p class='recent_loc'>
                             <span>
                                 <img src='https://fonts.gstatic.com/s/i/materialiconsoutlined/restore/v12/24px.svg'>
@@ -194,7 +194,7 @@
                         </p>
                         <p class='recent_loc'> <span>
                                 <img src='https://fonts.gstatic.com/s/i/materialiconsoutlined/restore/v12/24px.svg'>
-                            </span>Jaysinpur,Jaysinpur,maharashtra,india</p>
+                            </span>Jaysinpur,Jaysinpur,maharashtra,india</p> -->
                     </div>
                 </div>
             </div>
@@ -207,11 +207,8 @@
 </div>
 <!-- End of Modal Content -->
 <div class="col-lg-7 mb-lg-0 mb-4">
-
 </div>
-
 <br>
-
 <div class="main_start" id="StoreDiVFirst">
     <p>Near Medical stores in your area</p>
     <div class="m-2">
@@ -250,14 +247,13 @@
     $(window).load(function() {
         $(".loader").fadeOut("slow")
     });
-
     var x = document.getElementById("demo");
     function getLocation() {
         $(".loader").fadeIn("slow")
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition);
+        navigator.geolocation.getCurrentPosition(showPosition, function(err) {alert(err)});
       } else { 
-        x.innerHTML = "Geolocation is not supported by this browser.";
+        x.innerHTML = "Geolocation is not supportt ed by this browser.";
       }
     }
     function showPosition(position) {
@@ -266,7 +262,6 @@
     var lat =  position.coords.latitude;
     var lon = position.coords.longitude;
     // console.log(lat,lon)
-        
     $.ajax({
         type: 'POST',
         url: '/detect-users-location',
@@ -280,7 +275,6 @@
             $(".loader").fadeOut("slow")
             mydata = response.context;
             for (var key in mydata){
-                
                 var temp = `<div class='card mx-auto my-2 align-items-center'>
                 <div class='img-box'>
                     <a href='/app-view/store-view/${mydata[key].id}/${mydata[key].name}/{${mydata[key].distance}''>
@@ -294,7 +288,10 @@
                     <h4>${mydata[key].distance} Km </h4>
                 </div>
             </div>`
+            if($("#StoreList").empty)
+            {
             $("#StoreList").append(temp);
+            }
             }           
         }
     });}
