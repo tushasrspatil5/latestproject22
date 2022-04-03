@@ -1,29 +1,14 @@
-<!--
-=========================================================
-* Soft UI Dashboard - v1.0.3
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard
-* Copyright 2021 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://www.creative-tim.com/license)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
--->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <link rel="apple-touch-icon" sizes="76x76" href="/static/assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="/static/assets/img/favicon.png">
 
   <title>
-    Django Soft UI Dashboard - {% block title %}{% endblock %} | AppSeed
+    TabMedico - {% block title %}{% endblock %} 
   </title>
   
   <!--     Fonts and icons     -->
@@ -37,6 +22,7 @@
   <!-- CSS Files -->
   <link id="pagestyle" href="/static/assets/css/soft-ui-dashboard.css?v=1.0.3" rel="stylesheet" />
 
+  
   <style>
     .notification_menu{
       margin-left:0px;
@@ -64,6 +50,20 @@
       .logout_icon{
         display: none !important;
       }
+#navbarBlur
+      {
+      position:fixed;
+      width:100%;
+      z-index:1027;
+      background:#FFFFFF;
+      margin-top:0px;
+      top:0px;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 0.0625em 0.0625em, rgba(0, 0, 0, 0.25) 0px 0.125em 0.5em, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px inset;
+      border:1px solid #eee;
+      }
+      #back_btn{
+        display:block !important;
+      }
     }
   </style>
   <!-- Specific CSS goes HERE -->
@@ -72,32 +72,22 @@
 
 </head>
 <body class="g-sidenav-show  bg-gray-100">
+ 
+  <main class="main-content position-relative  mt-1 border-radius-lg ">
 
-  {% include "includes/sidebar.html" %}
-
-  <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg ">
-
-    {% include "includes/navigation.html" %}
 
     {% block content %}{% endblock content %}
-
   </main>
 
-  {% include "includes/fixed-plugin.html" %}
 
+  {% include "includes/fixed-plugin.html" %}
   {% include "includes/scripts.html" %}
 
   <!-- Specific JS goes HERE --> 
   {% block javascripts %}{% endblock javascripts %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-  <script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
+<script>
   </script>
 
   <!-- Github buttons -->
@@ -105,6 +95,5 @@
 
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="/static/assets/js/soft-ui-dashboard.min.js?v=1.0.3"></script>
-
 </body>
 </html>

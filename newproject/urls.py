@@ -83,7 +83,7 @@ urlpatterns = [
     path('otp' , views.otp , name="otp"),
     path('login-otp',views.login_otp , name="login_otp") ,
     path("logout/", views.handelLogout, name="logout"),
-
+    
     # New Urls
     path('home/select-location',views.Select_Location_Store,name='Select_Location_Store'),
     path('detect-users-location',views.DetectCurrentLocation,name='DetectCurrentLocation'),
@@ -110,6 +110,8 @@ urlpatterns = [
     path('store-notification/details/<str:current_user>/<int:myid>',views.notification_view_details,name="notification_view_details"),
     path('app-view/store-notification/details/<str:current_user>/<int:myid>',views.notification_view_details,name="notification_view_details"),
     path('app-view/store-order-response/<int:myid>',views.StoreResponse,name='store-order-response'),
+    # path('home/callback',views.callback,name='callback'),
 
-
+    #For Delivery-Partner
+    path('app-view/get-delivery-requests',views.GetDeliveryNew,name='get-delivery-requests'),
 ]+ static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

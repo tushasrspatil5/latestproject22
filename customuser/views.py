@@ -108,7 +108,7 @@ def home(request):
     # # return render(request,'shops/home.html'
     # context = {'new_list':new_list,'product':product,'city_names':city_names,'placeholder_city':placeholder_city} 
     context = {}
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and user_type.objects.filter(user=request.user).exists():
         if user_type.objects.get(user=request.user).is_delivery == True:
             return render(request,'deliver/home/index.html',context) 
         elif user_type.objects.get(user=request.user).is_store == True:
@@ -239,7 +239,7 @@ def common(request):
     noti_len = 0
     prof_fname = None
     prof_lname =None
-    
+    current_city = ' '
     usermail = ''
     name= 'Welcome'
     my_url = request.path
@@ -256,10 +256,12 @@ def common(request):
     
     if request.user.is_authenticated and user_type.objects.exists():
         username = request.user
-        prof_fname = PersonalDetails.objects.filter(username=str(username))[0].fname
-        prof_lname = PersonalDetails.objects.filter(username=str(username))[0].lname
-    
-    if request.user.is_authenticated:
+        try:
+            prof_fname = PersonalDetails.objects.filter(username=str(username))[0].fname
+            prof_lname = PersonalDetails.objects.filter(username=str(username))[0].lname
+        except:
+            pass
+    if request.user.is_authenticated and user_type.objects.filter(user=request.user).exists():
         if user_type.objects.get(user=request.user).is_delivery==True:
             noti_len = Orders.objects.filter(deliver_status = False).count()
             app_user_type = 'deliver'
@@ -270,33 +272,35 @@ def common(request):
             usermail = str(request.user)
             name = str(fname) + str(' ') + str(lname)
 
-    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
-        notification_url = 'users-notifications'
-        noti_len = Orders.objects.filter(order_completed = False).filter(c_username=str(request.user)).count()
-        app_user_type = 'customer'
-        user = request.user
-        myname = PersonalDetails.objects.filter(username = user)
-        fname = myname[0].fname
-        lname = myname[0].lname
-        usermail = str(request.user)
-        name = str(fname) + str(' ') + str(lname)
-        if request.POST.get('input_city_name'):
-            current_city = request.POST.get('input_city_name')
+    if request.user.is_authenticated and user_type.objects.filter(user=request.user).exists():
+        if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
+            notification_url = 'users-notifications'
+            noti_len = Orders.objects.filter(order_completed = False).filter(c_username=str(request.user)).count()
+            app_user_type = 'customer'
+            user = request.user
+            myname = PersonalDetails.objects.filter(username = user)
+            fname = myname[0].fname
+            lname = myname[0].lname
+            usermail = str(request.user)
+            name = str(fname) + str(' ') + str(lname)
+            if request.POST.get('input_city_name'):
+                current_city = request.POST.get('input_city_name')
+            else:
+                uname = request.user
+                current_user = PersonalDetails.objects.filter(username= uname)
+                current_city = str(current_user[0].city)
         else:
-            uname = request.user
-            current_user = PersonalDetails.objects.filter(username= uname)
-            current_city = str(current_user[0].city)
-    else:
-        if request.POST.get('input_city_name'):
-            current_city = request.POST.get('input_city_name')
-        else:
-            current_city = "Search Location"
+            if request.POST.get('input_city_name'):
+                current_city = request.POST.get('input_city_name')
+            else:
+                current_city = "Search Location"
 
-    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_store==True:
-        notification_url = 'store-notifications'
-        noti_len = Orders.objects.filter(order_accept_status = 'not_responded').count()
-        usermail = str(request.user)
-        app_user_type = 'store_owner'
+    if request.user.is_authenticated and user_type.objects.filter(user=request.user).exists():
+        if request.user.is_authenticated and user_type.objects.get(user=request.user).is_store==True:
+            notification_url = 'store-notifications'
+            noti_len = Orders.objects.filter(order_accept_status = 'not_responded').count()
+            usermail = str(request.user)
+            app_user_type = 'store_owner'
 
     return {
         'current_city':current_city,'fname':fname,'app_user_type':app_user_type,'noti_len':noti_len,'prof_lname':prof_lname,
@@ -699,12 +703,13 @@ def StoreList(request):
 @login_required(redirect_field_name='next',login_url = '/login')
 def medical_store_view(request,myid,st_name,st_dist):
     data = Shop.objects.filter(id = myid)
-    distance = st_dist[1:]
+    distance = st_dist
     name = data[0].name
     store_user = data[0].store_user
     city_name = data[0].city
     address = data[0].address 
     id_ = myid
+
     if request.method == 'POST':
         display_type = request.POST.get('is_conditions' or None)    
         myfile = request.FILES["image_file"] 
@@ -857,7 +862,7 @@ def ChangePassword(request , token):
     return render(request , 'shops/change-password.html' , context)
 
 def Send_Notification(request):
-           
+    pass        
 # def Send_Notification(request):
 #     import os
 #     from twilio.rest import Client
@@ -870,7 +875,6 @@ def Send_Notification(request):
 #                          from_='+14433414796',
 #                          to='+919108085748'
 #                      ) 
-    pass
    
 @login_required(redirect_field_name='next',login_url = '/login')
 def show_notifications(request,user_name):
@@ -1211,10 +1215,8 @@ def notification_view_details(request,current_user,myid):
             images_data = []
             for img in range(len(pers_dict)):
                 images_data.append(pers_dict[img])
-            
         except:
             pass
-
         IsAccepted = order_details[0]
     context = {
         'data':data,'new_data':new_data,'type_obj':type_obj,'myid':myid,'text':text,'Is_responsed':Is_responsed,
@@ -1513,31 +1515,7 @@ def NewMyProfile(request):
 
 @login_required(redirect_field_name='next',login_url = '/login')
 def MyAddresses(request):
-    sel_add_list = []
-    if request.POST.get('confirmed_delete'):
-        myid = request.POST.get('confirmed_delete')
-        print(myid)
-        SavedAddress.objects.filter(id=myid).delete()
-
-    if request.POST.get('addressvalue'):
-        sel_id = request.POST.get('addressvalue')
-        floorno = request.POST.get('floorno')
-        landmark = request.POST.get('landmark')
-        SavedAddress.objects.filter(id=sel_id).update(landmark = landmark, room_no = floorno)
-    if request.is_ajax():
-        sel_id = request.POST.get('data')
-        selected_address = SavedAddress.objects.filter(id=sel_id)
-        sel_add_dict = {'lm': selected_address[0].landmark,
-        'rn': selected_address[0].room_no,
-        }
-        sel_add_list.append(sel_add_dict)
-        return JsonResponse({'selected_address':sel_add_list})
-    try:
-        addresses = SavedAddress.objects.filter(username = str(request.user))
-    except:
-        pass
-        addresses = ''
-    context = {'items':'item','addresses':addresses}
+    context = {'items':'item'}
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -2468,7 +2446,6 @@ def Select_Location_Store(request):
             'address':i.address,
             'id':i.pk,
             }
-
             new_list.append(my_list)
         new_list.sort(key=lambda x: x["distance"])
         context = {'new_list':new_list}
@@ -2491,3 +2468,30 @@ def GetData(request):
 def Appview(request):
     templates = 'app-view/user/home/index.html'
     return render(request,templates)
+
+
+def GetDeliveryNew(request):
+    store_dict = {}
+    storelist = []
+    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_delivery==True:
+        filterd_orders = Orders.objects.filter(payment_status ='cod').filter(deliver_status = False)
+        for order in filterd_orders:
+            shop_ob = Shop.objects.filter(store_user = str(order.s_username))
+            storename = shop_ob[0].name 
+            storeaddress = shop_ob[0].address
+            id = order.id
+            time = order.date.strftime('%H:%M:%S')
+            date = order.date.date()
+            mixed = str(date) + str(time)
+            time_ago = timeago(f"{str(date)} {str(time)}").ago
+            store_dict = {
+                'storename': storename,
+                'storeaddress':storeaddress,
+                'id':id,
+                'time':time_ago
+            }
+            storelist.append(store_dict)
+        context = {'storelist':storelist}
+        return render(request,'deliver/home/index.html',context)
+    else:
+        return HttpResponse('Page Not Found..')
