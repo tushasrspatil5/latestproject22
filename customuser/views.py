@@ -2469,7 +2469,6 @@ def Appview(request):
     templates = 'app-view/user/home/index.html'
     return render(request,templates)
 
-
 def GetDeliveryNew(request):
     store_dict = {}
     storelist = []
