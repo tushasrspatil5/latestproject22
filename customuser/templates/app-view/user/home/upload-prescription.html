@@ -105,6 +105,7 @@
             margin-top: 24px;
         }
 
+        .submit_btn,
         #submit_btn {
             text-transform: center;
             background-color: #000080;
@@ -117,6 +118,7 @@
 
         }
 
+        .submit_btn:hover,
         #submit_btn:hover {
             background-color: #fff;
             color: #000080;
@@ -375,6 +377,7 @@
                 margin-top: 10px;
             }
 
+            .submit_btn,
             #submit_btn {
                 text-transform: center;
                 background-color: #000080;
@@ -618,11 +621,13 @@
             font-size: 14px;
             font-weight: 700;
         }
-        .btn-block{
-            color:#000080;
+
+        .btn-block {
+            color: #000080;
             font-weight: 700;
             font-size: 13px;
         }
+
         @media screen and (max-width: 768px) {
 
             .gallary_box {
@@ -644,6 +649,7 @@
                 max-width: 150px;
             }
         }
+
         .loader {
             position: fixed;
             z-index: 99;
@@ -656,6 +662,11 @@
             justify-content: center;
             align-items: center;
         }
+        #submit_1_loader{
+    height: 14px !important;
+    width: 14px;
+    margin-left: 10px;
+  }
     </style>
 
 </head>
@@ -707,25 +718,21 @@
         <div class="my-5">
             <div class="row">
                 {% for i in previus_10 %}
-
                 <div class="card mx-auto my-2 p-2 align-items-center">
                     <a href="/media/{{i.image}}" target="_blank">
                         <img src="/media/{{i.image}}"></a>
                     <button id='{{i.id}}' class="pres_cart btn"><span id="{{i.id}}">Add</span></button>
                     <p id="prev_date"> {{i.date}}</p>
                 </div>
-
                 {%endfor%}
-
-
-
-
             </div>
             <div class="text-center">
                 <form method='post'>
                     {% csrf_token %}
                     <input type="hidden" name="PresItems" id="PresItems">
-                    <button id="submit_btn" type="submit">Proceed</button>
+                    <div class="container">
+                        <button class="submit_btn" id="submit_1">Proceed</button>
+                    </div>
                 </form>
                 <!-- <button  type="submit" class="btn btn-outline" >Send</button> -->
             </div>
@@ -760,21 +767,20 @@
         </form>
     </div>
     <div class="loader">
-            <img src="https://www.stamforduniversity.edu.bd/asset/includes/loader/processing.gif" style="width: 100px;">
+        <img src="https://www.stamforduniversity.edu.bd/asset/includes/loader/processing.gif" style="width: 100px;">
     </div>
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<script>
-//Loading gif
-$(".loader").fadeOut("slow")
-function Proceed(){
-    $(".loader").fadeIn("slow")
-}
+    <script>
+        //Loading gif
+        $(".loader").fadeOut("slow")
+        function Proceed() {
+            $(".loader").fadeIn("slow")
+        }
         var upload = new FileUploadWithPreview("myUniqueUploadId");
         var current_count_for_skills = 0
         function addInputForSkills() {
-
             var html = ` 
             <div style="margin: 10px;" class="row mt-3" id="input_skill_${current_count_for_skills}"> 
             <div class="form-group col-md-8">
@@ -903,8 +909,14 @@ function Proceed(){
             var element = document.getElementById(`input_skill`);
             element.remove()
         }
-        
-
+    </script>
+    
+    <script>
+        $('#submit_1').click(function () {
+        document.getElementById('submit_btn').innerHTML = `Uploading..<span class="spinner-border" role="status" 
+            id='submit_1_loader'>
+        </span>`
+        }); 
     </script>
 </body>
 

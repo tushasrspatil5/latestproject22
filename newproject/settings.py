@@ -33,9 +33,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # Application definition
-
 INSTALLED_APPS = [
 	'django_extensions',
+    # Cores Allow
+     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,7 +47,6 @@ INSTALLED_APPS = [
 ]
 AUTH_USER_MODEL = 'customuser.User'
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -55,6 +55,32 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Cores Allow
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+
+]
+# Cores Allow
+
+CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+ # If this is used, then not need to use `CORS_ALLOW_ALL_ORIGINS = True`
+
+
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     r"^https://\w+\.google\.com$",
+# ]
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
 ]
 
 ROOT_URLCONF = 'newproject.urls'
@@ -82,25 +108,24 @@ WSGI_APPLICATION = 'newproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
-
-DATABASES = { 'default': { 'ENGINE': 'django.db.backends.mysql',
-'NAME': 'db1',
-'USER': 'admin', 
-'HOST':'database-1.cbdidwlgizt5.ap-south-1.rds.amazonaws.com',
-'PORT':'3306',
-'PASSWORD':'Pass1234',
-'OPTIONS': {
-            'sql_mode': 'traditional',
-        }
-    } 
-        }
+# DATABASES = { 'default': { 'ENGINE': 'django.db.backends.mysql',
+# 'NAME': 'db1',
+# 'USER': 'admin', 
+# 'HOST':'database-1.cbdidwlgizt5.ap-south-1.rds.amazonaws.com',
+# 'PORT':'3306',
+# 'PASSWORD':'Pass1234',
+# 'OPTIONS': {
+#             'sql_mode': 'traditional',
+#         }
+#     } 
+#         }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

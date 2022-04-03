@@ -123,22 +123,7 @@ $.ajax({
 });
 }
 
-//Back Button show
-var myele = window.location.href;
-        if (myele != 'http://www.tabmedico.com') {
-          document.getElementById('back_arrow').style.display = 'block';
-        }
-        else{
-          document.getElementById('back_arrow').style.display = 'none';
-        }
 
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
   </script>
 
   <!-- Github buttons -->
