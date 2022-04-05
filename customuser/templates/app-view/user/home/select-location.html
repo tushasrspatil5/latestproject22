@@ -89,13 +89,12 @@
     .main_start .card {
         height: 14rem;
         border: 1px solid #000080;
-        width: 10rem;
+        width: 9rem;
     }
 
     .main_start .img-box1 {
         height: 130px;
     }
-
     .main_start h4 {
         font-size: 13px;
         padding: 0px;
@@ -115,22 +114,18 @@
         padding-left: 10px;
         padding-right: 10px;
     }
-
     .main_start p {
         font-size: 15px;
         font-weight: 700;
         text-align: center;
     }
-
     .btn-block {
         background-color: #fff;
     }
-
     #pac-input:focus {
         border: 1px solid #000080 !important;
         outline: none;
     }
-
     @media screen and (max-width: 990px) {
         .div_img {
             display: none;
@@ -203,7 +198,7 @@
         font-weight: 300;
     }
 
-  
+
 
     #pac-input:focus {
         border-color: #4d90fe;
@@ -228,15 +223,15 @@
         <img src="https://www.stamforduniversity.edu.bd/asset/includes/loader/processing.gif" style="width: 100px;">
     </div>
     <!-- Button Modal -->
-    <button type="button" class="btn btn-block mt-5 w-100"onclick="getLocation()">Detect current location
-        &nbsp;<span><img src="/media/icons/location.png"
-            style="height: 15px;"></span></button>
+    <button type="button" class="btn btn-block mt-5 w-100" onclick="getLocation()">
+    <span id="change_by_name">Detect current location</span>
+        &nbsp;<span><img src="/media/icons/location.png" style="height: 15px;"></span></button>
 
     <!-- Modal Content -->
     <form>
         {%csrf_token%}
-    <input class="form-control border border-primary w-100" id="pac-input" type="text"
-        placeholder="Search for Place,City Area" />
+        <input class="form-control border border-primary w-100" id="pac-input" type="text"
+            placeholder="Search for Place,City Area" />
     </form>
 </div>
 
@@ -248,15 +243,13 @@
 </div>
 <br>
 <div class="hiddenarea" id='hiddenarea' style="display: none;">
-<div class="main_start" id="StoreDiVFirst">
-    <p>Near Medical stores in your area</p>
-    <div class="m-2">
-    </div>
+    <div class="main_start" id="StoreDiVFirst">
+        <p>Near Medical stores in your area</p>
+        <div class="m-2">
+        </div>
         <div class="row" id='StoreList'>
-
-
             {% for i in new_list %}
-            <div class="card mx-auto my-2 align-items-center">
+            <div class="card mx-auto my-2 align-items-center" >
                 <div class="img-box">
                     <a href="/app-view/store-view/{{i.id}}/{{i.name}}/{{i.distance}}">
                         <img src="https://th.bing.com/th/id/OIP.H-QL_6Ujz1l0gPSmdV4i8AHaE8?pid=ImgDet&rs=1"
@@ -276,9 +269,6 @@
 <hr class="line1">
 {% include "includes/footer.html" %}
 </div>
-
-
-
 {% endblock content %}
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
@@ -304,27 +294,12 @@
             x.innerHTML = "Geolocation is not supportt ed by this browser.";
         }
     }
-
     function showPosition(position) {
         // Show Medical Stores with current location
         const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
         var lat = position.coords.latitude;
         var lon = position.coords.longitude;
-
-        var latitude = 16.407015;
-    var longitude = 74.376342;
-  
-    $.ajax({ url:'http://api.openweathermap.org/geo/1.0/reverse?lat=51.5098&lon=-0.1180&limit=5&appid=AIzaSyBPDQ8ED06bcwh-X8C4uGoZOS45knP_loY',
-         success: function(data){
-             console.log(data.results);
-            
-             /*or you could iterate the components for only the city and state*/
-         }
-});
-
-
-
-
+        displayLocation(lat, lon);
         // console.log(lat,lon)
         $.ajax({
             type: 'POST',
@@ -336,36 +311,32 @@
             },
             dataType: 'json',
             success: function (response) {
-                document.getElementById('hiddenarea').style.display = 'block';        
+                document.getElementById('hiddenarea').style.display = 'block';
                 $(".loader").fadeOut("slow")
                 document.getElementById('StoreList').innerHTML = ' ';
                 mydata = response.context;
                 for (var key in mydata) {
                     var temp = `<div class='card mx-auto my-2 align-items-center'>
-                <div class='img-box'>
-                <a href='/app-view/store-view/${mydata[key].id}/${mydata[key].name}/{${mydata[key].distance}''>
-                <img src='https://th.bing.com/th/id/OIP.H-QL_6Ujz1l0gPSmdV4i8AHaE8?pid=ImgDet&rs=1'
-                    style='padding: 10px;max-width: 100%;height: 110px;''></a>
-            </div>
-                <h4>${mydata[key].name}</h4>
-                <p class='text-dark' id="item_address" style='font-size: 11px;font-weight: 700;''>
-                    ${mydata[key].address}</p>
-                <div class='distance_km' style='text-align:center;'>
-                    <h4>${mydata[key].distance} Km </h4>
-                </div>
-            </div>`
+                                <div class='img-box'>
+                                <a href='/app-view/store-view/${mydata[key].id}/${mydata[key].name}/{${mydata[key].distance}''>
+                                <img src='https://th.bing.com/th/id/OIP.H-QL_6Ujz1l0gPSmdV4i8AHaE8?pid=ImgDet&rs=1'
+                                    style='padding: 10px;max-width: 100%;height: 110px;''></a>
+                            </div>
+                                <h4>${mydata[key].name}</h4>
+                                <p class='text-dark' id="item_address" style='font-size: 11px;font-weight: 700;''>
+                                    ${mydata[key].address}</p>
+                                <div class='distance_km' style='text-align:center;'>
+                                    <h4>${mydata[key].distance} Km </h4>
+                                </div>
+                            </div>`
                     if ($("#StoreList").empty) {
                         $("#StoreList").append(temp);
                     }
                 }
             }
         });
-    
-  
-
     }
 </script>
-
 <!-- Google Api search places -->
 <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPDQ8ED06bcwh-X8C4uGoZOS45knP_loY&callback=initAutocomplete&libraries=places&v=weekly"
@@ -387,8 +358,7 @@
                 var long = place.geometry.location.lng()
                 var lat = place.geometry.location.lat()
                 const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-                $(".loader").fadeIn("slow");
-                document.getElementById('hiddenarea').style.display = 'block';
+               displayLocation(lat, long);
                 $.ajax({
                     type: 'POST',
                     url: '/detect-users-location',
@@ -400,7 +370,7 @@
                     dataType: 'json',
                     dataType: 'json',
                     success: function (response) {
-                        $(".loader").fadeOut("slow")
+                        document.getElementById('hiddenarea').style.display = 'block';
                         mydata = response.context;
                         document.getElementById('StoreList').innerHTML = ' ';
                         for (var key in mydata) {
@@ -429,9 +399,38 @@
         });
     }
 
-
-
-
+    //retrun City Or Ara name
+    function displayLocation(latitude, longitude) {
+        var geocoder;
+        geocoder = new google.maps.Geocoder();
+        var latlng = new google.maps.LatLng(latitude, longitude);
+        geocoder.geocode(
+            { 'latLng': latlng },
+            function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                        var add = results[0].formatted_address;
+                        var value = add.split(",");
+                        count = value.length;
+                        country = value[count - 1];
+                        state = value[count - 2];
+                        city = value[count - 3];
+                        document.getElementById('change_by_name').innerHTML = city;
+                    }
+                    else {
+                        console.log("address not found");
+                    }
+                }
+                else {
+                    console.log("Geocoder failed due to: " + status);
+                }
+            }
+        );
+    }
 </script>
+
+
+
+
 
 {% endblock javascripts %}
