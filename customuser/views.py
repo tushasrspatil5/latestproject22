@@ -182,7 +182,6 @@ def otp(request):
         else:
             context = {'message' : 'Wrong OTP' , 'class' : 'danger','mobile':mobile }
             return render(request,'accounts/reg_otp.html' , context)
-
     return render(request,'accounts/reg_otp.html' , context)
 
 url_list1 = []
@@ -1015,6 +1014,7 @@ def notification_view(request):
             else:
                 user_noti_1 = 'We are not able to accept your request.  '
                 Orders.objects.filter(id=DataId).update(user_notification_1 = user_noti_1,order_accept_status='rejected')
+                
                 return redirect(f"/store-order-response/{DataId}")
 
     if request.user.is_authenticated and type_obj.is_user==True:
@@ -1133,7 +1133,6 @@ def UsersNotifications(request):
         templates = 'app-view/user/home/notifications.html'
     except:          
         templates = 'user/home/notifications.html'
-
     context = {'messages_list':messages1}
     return render(request,templates,context)
 
@@ -1143,29 +1142,29 @@ def notification_view_details(request,current_user,myid):
     new_data = []
     text = ""
     if request.user.is_authenticated and type_obj.is_store==True:
+        # my_orders = Orders.objects.filter(d_username)
         order_details = Orders.objects.filter(id=myid)
         images_id = order_details[0].images_id
         for j in order_details:
             j.date = j.date.strftime('%H:%M:%S')
             new_data.append(j)
         inbox_items = order_details[0].inbox_items
+        inbox_items = json.loads(inbox_items)
         items_dict = {}
         items_list = []
         prod_len = 0
         if len(inbox_items) >= 1:
-            inbox_items = json.loads(inbox_items)
             for i in inbox_items:
-                for item in i:
-                    prod_name=i[item][0] 
-                    prod_pack = i[item][1]
-                    qty = i[item][2]
-                    items_dict = {
-                        'Product':prod_name,
-                        'Pack':prod_pack,
-                        'Quantity':qty,
-                    }
-                    prod_len = prod_len + len(prod_name)
-                    items_list.append(items_dict)
+                prod_name=inbox_items[i][0] 
+                prod_pack = inbox_items[i][1] 
+                qty = inbox_items[i][2] 
+                items_dict = {
+                    'Product':prod_name,
+                    'Pack':prod_pack,
+                    'Quantity':qty,
+                }
+                prod_len = prod_len + len(prod_name)
+                items_list.append(items_dict)
         if prod_len <= 1:
             Items_show = False
         else:
@@ -1275,12 +1274,14 @@ def UsersNotificationDetails(request,current_user,myid):
         message_1 = 'Your Medicines has been uploaded Successfully.'
     IsUser = True
     bill_image_store = []
+    
     if StoreBill.objects.filter(order_id=myid).exists():
         bill_image_store1 =StoreBill.objects.filter(order_id=myid)
         for j in bill_image_store1:
             j.date =  j.date.strftime('%H:%M:%S')
             bill_image_store.append(j)
         bill_image_store =bill_image_store[-1]
+    
     params = {'UsersNotifications':UsersNotifications,
     'IsUser':IsUser,
     'bill_image_store':bill_image_store,
@@ -1293,8 +1294,7 @@ def UsersNotificationDetails(request,current_user,myid):
         obj.index('app-view') 
         url_path = 'app-view/user/home/notification-view.html'
     except:          
-        url_path = 'user/home/notification-view.html'
-
+        url_path = 'user/home/notification-view.html' 
     return render(request,url_path,params)
 
 item_list = []
@@ -1307,6 +1307,7 @@ def CheckOut(request):
         inputdata = request.POST.get('data')
         data = json.loads(inputdata)
         item_list.append(data)
+        print(item_list)
         return JsonResponse({'data':data,'item_list':item_list})
 
     if request.is_ajax() and request.POST.get('newaddress'):
@@ -1336,9 +1337,8 @@ def CheckOut(request):
     pres_data = None
     pred_id = ''
     images_data = None
-
-    # Without Prescription
     
+    # Without Prescription
     if request.POST.get('selected_store'):
         storeid = request.POST.get('selected_store')
         current_data=Shop.objects.filter(id = int(storeid))
@@ -1398,7 +1398,9 @@ def CheckOut(request):
         flat_no = ob.room_no
         pincode = '416101'
         items = ''
-        new_inbox_items = selected_products
+        new_inbox_items = json.loads(selected_products)
+        print(type(new_inbox_items))
+
         # Creating new_inbox_items 
         store_noti_1 = 'You have got request for medicines'
         if customername == '':   
@@ -1515,7 +1517,31 @@ def NewMyProfile(request):
 
 @login_required(redirect_field_name='next',login_url = '/login')
 def MyAddresses(request):
-    context = {'items':'item'}
+    sel_add_list = []
+    if request.POST.get('confirmed_delete'):
+        myid = request.POST.get('confirmed_delete')
+        print(myid)
+        SavedAddress.objects.filter(id=myid).delete()
+
+    if request.POST.get('addressvalue'):
+        sel_id = request.POST.get('addressvalue')
+        floorno = request.POST.get('floorno')
+        landmark = request.POST.get('landmark')
+        SavedAddress.objects.filter(id=sel_id).update(landmark = landmark, room_no = floorno)
+    if request.is_ajax():
+        sel_id = request.POST.get('data')
+        selected_address = SavedAddress.objects.filter(id=sel_id)
+        sel_add_dict = {'lm': selected_address[0].landmark,
+        'rn': selected_address[0].room_no,
+        }
+        sel_add_list.append(sel_add_dict)
+        return JsonResponse({'selected_address':sel_add_list})
+    try:
+        addresses = SavedAddress.objects.filter(username = str(request.user))
+    except:
+        pass
+        addresses = ''
+    context = {'items':'item','addresses':addresses}
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -1597,64 +1623,8 @@ def ProductView(request,myid):
         'safety_info':safety_info,'ingradients':ingradients,'Item':Item,
         })
 
-#  def GetDelivery(request):
-#     shop_list = Shop.objects.all()
-#     request_list = Orders.objects.all()
-#     current_deliver = PersonalDetails.objects.filter(username=request.user)
-#     if request.POST:
-#         deliver = PersonalDetails.objects.filter(username = request.user)[0]
-#         delivername = str(deliver.fname) + str(deliver.lname)
-#         delivermobile = deliver.mob
-#         response_id = request.POST.get('accept_btn')
-#         TrackOrderChange(request,response_id)
-#         Orders.objects.filter(id=response_id).update(d_response_status = True,d_username=str(request.user),deliver_status=True)
-#         return redirect('/get-delivery')
-        
-#     store_lat = float(current_deliver[0].lat)
-#     store_lon = float(current_deliver[0].lon)
-#     for k in request_list:
-#         if k.order_accept_status == 'accepted':
-#             StoreUser = k.s_username
-#             ShopName = shop_list.filter(store_user = StoreUser)[0].name
-#             ShopLat = shop_list.filter(store_user = StoreUser)[0].lat  
-#             ShopLon = shop_list.filter(store_user = StoreUser)[0].lon
-#         # calculate distance between from shop to delivery boy
-#             my_list = {}
-#             new_list = list()
-#             lon2 = float(ShopLon)
-#             lat2 = float(ShopLat)
-#             theta = store_lon-lon2
-#             dist = math.sin(math.radians(store_lat)) * math.sin(math.radians(lat2)) + math.cos(math.radians(store_lat)) * math.cos(math.radians(lat2)) * math.cos(math.radians(theta))
-#             dist = math.acos(dist)
-#             dist = math.degrees(dist)
-#             miles = dist * 60 * 1.1515
-#             distance = miles * 1.609344
-#             distance = round(distance, 1)
-#             Orders.objects.filter(s_username = StoreUser).filter(id=k.id).update(dist_d_to_s = distance)
-#             AllDeliveries = Orders.objects.all().order_by('-date')
-#             Deliver_dict = {}
-#             Deliver_list = []
-#             for i in AllDeliveries:
-#                 if i.order_accept_status == 'accepted':
-#                     if Shop.objects.filter(store_user=i.s_username).exists():
-#                         shopdata=Shop.objects.filter(store_user=i.s_username)[0]
-#                         storename = shopdata.name
-#                         store_address = shopdata.address
-#                         storecity = shopdata.city
-#                         storedistance = distance
-#                         date = i.date.strftime('%H:%M:%S')
-#                         Deliver_dict= {
-#                             'store_name':storename,
-#                             'store_address':store_address,
-#                             'storecity':storecity,
-#                             'storedistance':storedistance,
-#                             'id':i.id,
-#                             'date':date,
-#                             'respondstatus':i.d_response_status,
-#                         }
-#                         Deliver_list.append(Deliver_dict)
-#     return render(request,'shops/delivery_page.html',{'Deliver_list':Deliver_list})
 
+#Delivery Requests for Delivery boy
 @login_required(redirect_field_name='next',login_url = '/login')
 def DeliveryRequests(request,myid):
     shop_list = Shop.objects.all()
@@ -1683,65 +1653,7 @@ def DeliveryRequests(request,myid):
     }
     Deliver_list.append(Deliver_dict)
     return Deliver_list
-    # if request.user.is_authenticated and user_type.objects.get(user=request.user).is_delivery==True: 
-        # shop_list = Shop.objects.all()
-        # request_list = Orders.objects.all()
-        # current_deliver = PersonalDetails.objects.filter(username=request.user)
-        # store_lat = float(current_deliver[0].lat)
-        # store_lon = float(current_deliver[0].lon)
-        # for k in request_list:
-        #     if k.order_accept_status == 'accepted':
-        #         StoreUser = k.s_username
-        #         ShopName = shop_list.filter(store_user = StoreUser)[0].name
-        #         ShopLat = shop_list.filter(store_user = StoreUser)[0].lat  
-        #         ShopLon = shop_list.filter(store_user = StoreUser)[0].lon
-        #     # calculate distance between from shop to delivery boy
-        #         my_list = {}
-        #         new_list = list()
-        #         lon2 = float(ShopLon)
-        #         lat2 = float(ShopLat)
-        #         theta = store_lon-lon2
-        #         dist = math.sin(math.radians(store_lat)) * math.sin(math.radians(lat2)) + math.cos(math.radians(store_lat)) * math.cos(math.radians(lat2)) * math.cos(math.radians(theta))
-        #         dist = math.acos(dist)
-        #         dist = math.degrees(dist)
-        #         miles = dist * 60 * 1.1515
-        #         distance = miles * 1.609344
-        #         distance = round(distance, 1)
-        #         Orders.objects.filter(s_username = StoreUser).filter(id=k.id).update(dist_d_to_s = distance)
-        #         AllDeliveries = Orders.objects.filter(order_completed = False).order_by('-date')
-        #         Deliver_dict = {}
-        #         Deliver_list = []
-                
-        #         for i in AllDeliveries:
-        #             if i.d_response_status == True:
-        #                 which_color = '#FF0000'
-        #                 text='Accepted'
-        #             else:
-        #                 which_color = '#00FF00'
-        #                 text='Accept'
-                    
-                    # if i.order_accept_status == 'accepted' and i.payment_status != 'not_responded':
-                    #     if Shop.objects.filter(store_user=i.s_username).exists():
-                    #         shopdata=Shop.objects.filter(store_user=i.s_username)[0]
-                    #         storename = shopdata.name
-                    #         store_address = shopdata.address
-                    #         storecity = shopdata.city
-                    #         storedistance = distance
-                    #         date = i.order_accept_time
-                    #         Deliver_dict= {
-                    #             'store_name':storename,
-                    #             'store_address':store_address,
-                    #             'storecity':storecity,
-                    #             'storedistance':storedistance,
-                    #             'id':i.id,
-                    #             'date':date,
-                    #             'respondstatus':i.d_response_status,
-                    #             'which_color':which_color,
-                    #             'text':text,
-                    #         }
-                    #         Deliver_list.append(Deliver_dict)
-        # pass
-    
+
 @login_required(redirect_field_name='next',login_url = '/login')
 def DeliveryStatus(request,myid):
     if Orders.objects.filter(id=myid)[0].d_response_status == True:

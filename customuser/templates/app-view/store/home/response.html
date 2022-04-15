@@ -8,7 +8,7 @@
     .submit {
         margin-left: auto;
         margin-right: auto;
-        background-color: #FF6347;  
+        background-color: #FF6347;
         color: #fff;
         margin: 5px;
         border: solid #FF6347;
@@ -19,7 +19,8 @@
     .submit {
         margin-left: auto;
         margin-right: auto;
-        background-color: #000080;;
+        background-color: #000080;
+        ;
         color: #ffffff;
         margin: 5px;
         font-size: 12px;
@@ -31,9 +32,11 @@
     }
 
     .submit:hover {
-        color: #000080;;
+        color: #000080;
+        ;
         background-color: #ffffff;
-        border: 1px solid #000080;;
+        border: 1px solid #000080;
+        ;
     }
 
     .submit:focus {
@@ -56,8 +59,10 @@
         text-align: center;
 
     }
+
     #enteramount:focus {
-        border: 1px solid #000080;;
+        border: 1px solid #000080;
+        ;
     }
 
     #sent_amount {
@@ -189,7 +194,8 @@
 
     #clickphoto {
         margin-left: 140px;
-        background-color: #000080;;
+        background-color: #000080;
+        ;
         border: solid #fff;
         color: #fff;
         font-size: 12px;
@@ -201,8 +207,10 @@
     }
 
     #clickphoto:hover {
-        color: #000080;;
-        border: 1px solid #000080;;
+        color: #000080;
+        ;
+        border: 1px solid #000080;
+        ;
         background-color: #fff;
     }
 
@@ -291,10 +299,12 @@
     #submit {
         margin-left: auto;
         margin-right: auto;
-        background-color: #000080;;
+        background-color: #000080;
+        ;
         color: #ffffff;
         margin: 5px;
-        border: solid #000080;;
+        border: solid #000080;
+        ;
         font-size: 12px;
         width: 100%;
         margin-top: 10px;
@@ -332,7 +342,8 @@
     }
 
     #acceptbtn {
-        background-color: #000080;;
+        background-color: #000080;
+        ;
         color: #fff;
         margin-top: 0px;
         padding: 7px;
@@ -342,22 +353,27 @@
         cursor: pointer;
         height: 40px;
         font-weight: 700;
-        width:30%
+        width: 30%
     }
-    .btn_area{
-        text-align:center;
+
+    .btn_area {
+        text-align: center;
     }
+
     #acceptbtn:hover {
-        color: #000080;;
+        color: #000080;
+        ;
         background-color: #fff;
-        border: solid #000080;;
+        border: solid #000080;
+        ;
         border-width: 0.5px;
         border-radius: 20px;
     }
 
     #acceptbtn:focus {
         outline: none;
-        border: solid #000080;;
+        border: solid #000080;
+        ;
         border-width: 0.5px;
     }
 
@@ -409,7 +425,8 @@
 
         #clickphoto {
             margin-left: 79px;
-            background-color: #000080;;
+            background-color: #000080;
+            ;
             border: solid #fff;
             color: #fff;
             font-size: 11px;
@@ -437,7 +454,8 @@
         #submit {
             margin-left: auto;
             margin-right: auto;
-            background-color: #000080;;
+            background-color: #000080;
+            ;
             color: #ffffff;
             margin: 5px;
             font-size: 12px;
@@ -448,31 +466,50 @@
         }
 
         #submit:hover {
-            color: #000080;;
+            color: #000080;
+            ;
             background-color: #ffffff;
-            border: 1px solid #000080;;
+            border: 1px solid #000080;
+            ;
         }
 
         #submit:focus {
             outline: none;
         }
-        #acceptbtn{
-            width:100%;
+
+        #acceptbtn {
+            width: 100%;
         }
     }
-    #loader,#loader2,#loader3{
+
+    #loader,
+    #loader2,
+    #loader3 {
         height: 14px !important;
         width: 14px;
         margin-left: 10px;
-      }
-     
-
-      </style>
+    }
+</style>
 {% endblock stylesheets %}
 {% block content %}
 <div class="container-fluid px-3 mt-5">
-    <div class='card h-100 p-3'>
+    {%if OrdersObj.order_accept_status == 'rejected' %}
+    <form method = 'post'>
+        {%csrf_token%}
+        <select class="form-select" aria-label="Default select example" name="rejection_reason">
+            <option selected>Select Reason</option>
+            <option value="1">Not in Stock </option>
+            <option value="2">Invaid Prescription</option>
+            <option value="3">Required doctors Prescription</option>
+          </select>
+          <div class="container text-center mt-3">
+              <button class="btn btn-primary" type="submit">Submit</button>
+          </div>
+        </form>
+{%else%}
 
+
+    <div class='card h-100 p-3'>
         <div class='box'>
             <br>
             <div class="track">
@@ -492,7 +529,8 @@
                     </span>
                 </div><span class='text2'>2.Order bill photo varified</span>
                 {%if not OrdersObj.is_bill_uploaded%}
-                <span type='submit' id='clickphoto' data-bs-toggle="modal" data-bs-target="#SendBill"> <i class='fa fa-camera'></i>&nbsp;Click Photo</span>
+                <span type='submit' id='clickphoto' data-bs-toggle="modal" data-bs-target="#SendBill"> <i
+                        class='fa fa-camera'></i>&nbsp;Click Photo</span>
                 {%endif%}
                 <br>
                 <br>
@@ -504,8 +542,8 @@
                 </div>
                 <span class='text3'>3.Amount Sent Successfully</span>
                 {%if AmountFilled == False %}
-                <span type='submit' id='clickphoto'data-bs-toggle="modal" data-bs-target="#SendAmount"
-                >Click Amount</span>
+                <span type='submit' id='clickphoto' data-bs-toggle="modal" data-bs-target="#SendAmount">Click
+                    Amount</span>
                 {%endif%}
             </div>
         </div>
@@ -526,10 +564,10 @@
                         <form method="POST" name="inputForm" enctype='multipart/form-data'>
                             {% csrf_token %}
                             <div class='parsalimage_div'>
-                                <input type="file" capture="environment" 
-                                name='inputbillimage' id="parsel_image" hidden />
+                                <input type="file" capture="environment" name='inputbillimage' id="parsel_image"
+                                    hidden />
                                 <label for="parsel_image" id='button'><span>
-                                <i class='fa fa-camera'></i>
+                                        <i class='fa fa-camera'></i>
                                         &nbsp;Open Camera</span></label>
                                 <div class='text-center'>
                                     <button type="submit" id="submit" class='btn btn-outline m-1'>Send</button>
@@ -540,7 +578,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="SendAmount" tabindex="-1" role="dialog" aria-hidden="true" >
+        <div class="modal fade" id="SendAmount" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-body">
@@ -549,16 +587,17 @@
                             {% csrf_token %}
                             <input type="search" name='enteramount' id="enteramount" placeholder="Enter amount in digit"
                                 aria-label="Search">
-                            <button type="submit" class='submit btn btn-outline m-1' id="sendamount"> Send Amount </button>
-                            
+                            <button type="submit" class='submit btn btn-outline m-1' id="sendamount"> Send Amount
+                            </button>
+
                     </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
+{%endif%}
 </div>
 <br>
 <hr class="line1">
@@ -567,39 +606,36 @@
 
 
 </div>
-
-
-
 {% endblock content %}
 
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script>
-      //Send Bill Image Button loader
-      $('#submit').click(function () {
-    document.getElementById('submit').innerHTML=`Uploading..<span class="spinner-border" role="status" id='loader2'>
+    //Send Bill Image Button loader
+    $('#submit').click(function () {
+        document.getElementById('submit').innerHTML = `Uploading..<span class="spinner-border" role="status" id='loader2'>
   </span>`
-  });
+    });
 
-//Send Amount Image Button loader
-      $('#sendamount').click(function () {
-    document.getElementById('sendamount').innerHTML=`Sending..<span class="spinner-border" role="status" id='loader3'>
+    //Send Amount Image Button loader
+    $('#sendamount').click(function () {
+        document.getElementById('sendamount').innerHTML = `Sending..<span class="spinner-border" role="status" id='loader3'>
   </span>`
-  });
+    });
 
-// Rename after click photo
-document.getElementById("parsel_image").onchange = function () {
-  var html = `<span><i class='fa fa-check'></i>&nbsp; Photo Captured </span>`;
-  document.getElementById('button').innerHTML = html;
-}; 
+    // Rename after click photo
+    document.getElementById("parsel_image").onchange = function () {
+        var html = `<span><i class='fa fa-check'></i>&nbsp; Photo Captured </span>`;
+        document.getElementById('button').innerHTML = html;
+    };
 
-  $('#acceptbtn').click(function () {
-  document.getElementById('acceptbtn').innerHTML = `
+    $('#acceptbtn').click(function () {
+        document.getElementById('acceptbtn').innerHTML = `
   <span>Proceeding..<span class="spinner-border" role="status" 
     id='loader'></span></span>`;
-  
-  }); 
+
+    }); 
 </script>
 
 

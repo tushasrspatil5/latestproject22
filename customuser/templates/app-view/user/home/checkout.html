@@ -464,6 +464,16 @@
         width: 14px;
         margin-left: 10px;
     }
+
+    .fa-times {
+        color: red;
+        font-size: 16px;
+    }
+
+    .product_list_td {
+        margin-left: 0px !important;
+        padding-left: 0px !important;
+    }
 </style>
 {% endblock stylesheets %}
 {% block content %}
@@ -471,7 +481,6 @@
 <!-- Product Add -->
 <div class="container-fluid">
     <br>
-
     <button type="button" class="btn btn-block bg-gradient-info mb-3 btn_1 mt-5" data-bs-toggle="modal"
         data-bs-target="#modalAddProduct">Add Products</button>
     <!-- Modal Content -->
@@ -548,6 +557,7 @@
                 </tr>
             </thead>
             <tbody class="tbody-light" id="table_box">
+
             </tbody>
         </table>
     </div>
@@ -601,208 +611,89 @@
 {% block javascripts %}
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-
 <script>
-    // GET ALL THE INPUT ELEMENTS.
 
-    count = 0;
+    // Check Local Storage
+    if (localStorage.getItem('input_prod') == null) {
+        var InProduct = {}
+    }
+    else {
+        InProduct = JSON.parse(localStorage.getItem('input_prod'));
+    }
+
+
+    console.log(InProduct)
+    //Add Product into array 
+    var count = 0;
     function AddProduct() {
+        count = count + 1
         var InName = document.getElementById('prod_name');
         InName = InName.value
-        var InQty = document.getElementById('prod_quantity');
-        var InPk = document.getElementById('packing');
-        const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-        count = count + 1;
-        if (localStorage.getItem('input_prod') == null) {
-            var InProduct = {}
+        var InQty = document.getElementById('prod_quantity').value;
+        var InPk = document.getElementById('packing').value;
+        if (InName == "" || InQty == "" || InPk == "") {
+            alert("Please add products");
         }
         else {
-            InProduct = JSON.parse(localStorage.getItem('input_prod'));
-        }
-        InProduct[parseInt(count)] = [InName.toString(), InPk.value, InQty.value];
-        localStorage.setItem('input_prod', JSON.stringify(InProduct));
-        //Sending data
-        $.ajax({
-            type: 'POST',
-            url: '/checkout',
-            data: {
-                'data': localStorage.getItem('input_prod'),
-                'csrfmiddlewaretoken': csrf,
-            }, 
-            dataType: 'json',
-            success: function (response) {
-                product_list = response.data
-                var count = 0;
-                for (var key in product_list) {
-                    count = count + 1;
-                    var temp = `<tr>
-                        <th>&nbsp;&nbsp;${product_list[key][0]}</th>
-                        <td >&nbsp;&nbsp;${product_list[key][1]}</td>
-                        <td>&nbsp;&nbsp;${product_list[key][2]}</td> 
-                        <td style='font-size:15px;color:red;'></td> 
-                    </tr>
-                   `
 
-                    $("#table_box").append(temp)
-                    document.getElementById('inputitems').style.display = 'block';
-                    document.getElementById('prod_added_noti').style.display = 'block';
-                    setInterval(function () {
-                        document.getElementById('prod_added_noti').style.display = 'none';
-                    }, 2000);
-                    var item_list = JSON.stringify(response.item_list)
-                    document.getElementById('selected_products').value = item_list;
-                    localStorage.clear()
-                }
+            if (localStorage.getItem('input_prod') == null) {
+                var InProduct = {}
+                var last_key = 0
             }
-        });
-    }
-
-    function AddNewAddress() {
-        NewHtml = `<h5>Add New Address &nbsp;&nbsp;&nbsp;<span style='font-weight:700;font-size:12px;color:#000080;' onclick='AddressListRefresh()'>Address List</span></h5>
-<input type="text" class="form-control" placeholder="House /Floor No"  name="floorno" id='floorno'>
-                      <input type="text" class="form-control mt-2" placeholder="Street name / Landmark" name="landmark" id='landmark'>
-                      <div class="text-center">
-                      <button type="submit" class="btn bg-info w-100 mt-4 mb-0 text-light" style='font-weight:700;'
-                      onclick='AddingAddress()'>Add Address</button>
-                    </div>`
-        document.getElementById('OldAddress').innerHTML = NewHtml;
-    }
-</script>
-
-<script>
-    if (localStorage.getItem('cart') == null) {
-        var cart = {};
-    } else {
-        cart = JSON.parse(localStorage.getItem('cart'));
-    }
-    var sum = 0;
-    if ($.isEmptyObject(cart)) {
-        //if object is empty
-        mystr = `<p>Your cart is empty, please add some items to your cart before checking out!</p>`
-        $('#items').append(mystr);
-    } else {
-        for (item in cart) {
-            let name = cart[item][1];
-            let qty = cart[item][0];
-            sum = sum + qty;
-            mystr = `<li class="list-group-item d-flex justify-content-between align-items-center" id='title_box'>
-                    ${name}
-                    <span class="badge badge-primary badge-pill">${qty}</span>
-                </li>`
-            $('#items').append(mystr);
+            else {
+                InProduct = JSON.parse(localStorage.getItem('input_prod'));
+                var last_key = Object.keys(InProduct).length
+            }
+            last_key = last_key + 1
+            InProduct[parseInt(last_key)] = [InName.toString(), InPk, InQty, last_key]
+            localStorage.setItem('input_prod', JSON.stringify(InProduct));
+            var InProduct = JSON.parse(localStorage.getItem('input_prod'));
+            ShowProduct(InProduct)
         }
     }
-    document.getElementById('cart').innerHTML = sum;
-    $('#itemsJson').val(JSON.stringify(cart));
-    // localStorage.clear();
-
-    function ShowAddressForm() {
-        document.getElementById('new_customer').style.display = 'block';
-        document.getElementById('old_customer').style.display = 'none';
-
-    }
-    // Show cart items if Prescription is True 
-    function AddCartItems() {
-        document.getElementById('FirstBlock').style.display = 'block';
-    }
-    var current_count_for_skills = 0
-    function addInputForSkills() {
-        var html = `<hr>
-     <div class='type_box row' id="input_skill">
-     <div class="d-flex flex-column h-100">
-<form method="post"  enctype="multipart/form-data">
-{%csrf_token%}
-<div class=''>
-    <input class="un" placeholder="Type Medicine name" name='input_product'
-        type='text'>
-    <span class=''>
-        <select class="packing" name='packing'>
-            <option class='active name'>Pack</optxion>
-            <option value='Strip'>Strip</option>
-            <option value='Tablet'>Tablet</option>
-                <option value='Syrup'>Syrup</option>
-                <option value='Tube'>Tube</option>
-                <option value='Jelly'>Jelly</option>
-                <option value='Ointment'>Ointment</option>
-                <option value='Ampule'>Ampule</option>
-                <option value='Vial'>Vial</option>
-                <option value='Sachet'>Sachet</option>
-                <option value='Bottle'>Bottle</option>
-                <option value='Packet'>Packet</option>
-            </select>
-        </span>
-        <span>
-            <select class="prod_quantity" name='prod_quantity'>
-                <option class='active name' style='margin-left:0px;padding-left:0px;'>
-                    Quality</optxion>
-                <option value='1'>1</option>
-                <option value='2'>2</option>
-                <option value='3'>3</option>
-                <option value='4'>4</option>
-                <option value='1'>5</option>
-                <option value='10'>10</option>
-                <option value='15'>15</option>
-                <option value='20'>20</option>
-            </select>
-        </span>
-    </div>   </div>
-        `
-        document.getElementById('skill_row').innerHTML += html;
-        current_count_for_skills++
-    }
-    function removeSkillInput() {
-        var element = document.getElementById(`input_skill`);
-        element.remove()
+    //Remove Product (row)
+    $('#table_box').on('click', '.delete_item', function () {
+        RemoveProduct(this.id)
+    });
+    function RemoveProduct(id) {
+        var target_id = '#table_' + id
+        var InProduct = JSON.parse(localStorage.getItem('input_prod'));
+        arr = Object.values(InProduct).filter((elem) => elem[3] != id);
+        arr = JSON.stringify(Object.assign({}, arr))
+        localStorage.setItem('input_prod', arr);
+        $(target_id).remove();
     }
 
-    function AddProducts() {
-        var input_div = document.getElementById('input_type_box')
-        HTML = `<div class="d-flex flex-column h-100">
-<form method="post"  enctype="multipart/form-data">
-{%csrf_token%}
-<div class=''>
-    <input class="un" placeholder="Type Medicine name" name='input_product'
-        type='text'>
-    <span class=''>
-        <select class="packing" name='packing'>
-            <option class='active name'>Pack</optxion>
-            <option value='Strip'>Strip</option>
-            <option value='Tablet'>Tablet</option>
-                <option value='Syrup'>Syrup</option>
-                <option value='Tube'>Tube</option>
-                <option value='Jelly'>Jelly</option>
-                <option value='Ointment'>Ointment</option>
-                <option value='Ampule'>Ampule</option>
-                <option value='Vial'>Vial</option>
-                <option value='Sachet'>Sachet</option>
-                <option value='Bottle'>Bottle</option>
-                <option value='Packet'>Packet</option>
-            </select>
-        </span>
-        <span>
-            <select class="prod_quantity" name='prod_quantity'>
-                <option class='active name' style='margin-left:0px;padding-left:0px;'>
-                    Quality</optxion>
-                <option value='1'>1</option>
-                <option value='2'>2</option>
-                <option value='3'>3</option>
-                <option value='4'>4</option>
-                <option value='1'>5</option>
-                <option value='10'>10</option>
-                <option value='15'>15</option>
-                <option value='20'>20</option>
-            </select>
-        </span>
-    </div>
-    <div id="skill_row">
-    </div>
-    <span type="button" id="add_button" onclick="addInputForSkills()"><span>Add
-            more</span></span>
-    <span id='remove_btn' type="button"
-        onclick="removeSkillInput()"><span>Remove</span></span>
-</div>`
-        input_div.innerHTML = HTML;
+    // Show Products on table
+    var currentProducts = JSON.parse(localStorage.getItem('input_prod'));
+    ShowProduct(currentProducts)
+
+    function ShowProduct(InProduct) {
+        document.getElementById('table_box').innerHTML = ' ';
+        for (var key in InProduct) {
+            var temp = `
+                    <tr id='table_${key}'>
+                        <td>&nbsp;&nbsp;${InProduct[key][0]}</th>
+                        <td >&nbsp;&nbsp;${InProduct[key][1]}</td>
+                        <td>&nbsp;&nbsp;${InProduct[key][2]}</td> 
+                        <td class='product_list_td'>
+                        <div class="d-flex flex-column justify-content-center">
+                        <div class='m-0 p-0'>
+                        <i class="fa fa-times delete_item" type='button' id='${key}' aria-hidden="true"></i>
+                        </div></div>
+                        </td>
+                    </tr>`
+            $('#table_box').append(temp);
+        }
+        document.getElementById('inputitems').style.display = 'block';
+        document.getElementById('prod_added_noti').style.display = 'block';
+        setInterval(function () {
+            document.getElementById('prod_added_noti').style.display = 'none';
+        }, 2000);
     }
+
+
+
 </script>
 
 <script>
@@ -857,15 +748,12 @@
             }
         });
     }
-
-
     $('#addlist').on('click', '.adds', function () {
         var inputs = document.querySelectorAll('.adds');
         for (var i = 0; i < inputs.length; i++) {
             document.getElementById(i).style.background = '#fff';
         }
         var idstr = this.id.toString();
-        console.log(idstr)
         document.getElementById(idstr).style.background = '#DCDCDC';
         document.getElementById('continue_btn').classList.add('bg-gradient-primary');
         document.getElementById('selected_address').value = idstr;
@@ -886,22 +774,21 @@
     $('#continue_btn').click(function () {
         document.getElementById('continue_btn').innerHTML = `Processing..<span class="spinner-border" role="status" 
     id='sign_in_loader'>
-  </span>`
+  </span>`;
+  // send data array from input form 
+  var product_list = JSON.stringify(localStorage.getItem('input_prod'));  
+  document.getElementById('selected_products').value = product_list;
     });
-
     $('#add_button').click(function () {
         document.getElementById('add_button').innerHTML = `Adding..<span class="spinner-border" role="status" 
     id=''>
   </span>`
     });
 
-
-
-
-$('#delete_product').click(function() {
-// product_id = this.id;
-// console.log(product_id)
-console.log('Cllckkee');
-});
+    $('#delete_product').click(function () {
+        // product_id = this.id;
+        // ////console.log(product_id)
+        ////console.log('Cllckkee');
+    });
 </script>
 {% endblock javascripts %}

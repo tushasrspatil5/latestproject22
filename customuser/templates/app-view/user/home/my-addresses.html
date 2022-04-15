@@ -19,59 +19,49 @@
 {% block content %}
 <div class="w-auto max-height-vh-100 h-100 p-3">
   <ul class="navbar-nav" style="list-style: none;">
-        {%for add in addresses %}
-        <li class="nav-item">{{add.landmark}}, {{add.room_no}}
-          <span>
-            <i class="fa fa-ellipsis-v dropdown-toggle-split" type="button" style="position:absolute;right:20px"
-              data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
-            <div class="dropdown-menu">
-              <form method="post">
-                {%csrf_token%}
-                <a class="dropdown-item address" id="{{add.id}}" data-bs-toggle="modal"
-                  data-bs-target="#EditAddressModal" onclick="SendAddressId()">Edit</a>
+    {%for add in addresses %}
+    <li class="nav-item">{{add.landmark}}, {{add.room_no}}
+     <span>
+        <i class="fa fa-ellipsis-v dropdown-toggle-split" type="button" style="position:absolute;right:20px"
+          data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></i>
+        <div class="dropdown-menu">
+          <form method="post">
+            {%csrf_token%}
+            <a class="dropdown-item address" id="{{add.id}}" data-bs-toggle="modal" data-bs-target="#EditAddressModal"
+              onclick="SendAddressId()">Edit</a>
+          </form>
+          <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalConfirmDelete">Delete</a>
+        </div>
+      </span>
+      <!-- Confirm Delete Address -->
+      <div class="modal fade" id="EditAddressModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-body px-md-5">
+              <div class="col-lg-12 sec_div">
+                <h5>Edit Address</h5>
+                <form method="post">
+                  {%csrf_token%}
+                  <input type="text" class="form-control" placeholder="House /Floor No" name="floorno" id='floorno'
+                    value="">
+                  <input type="text" class="form-control mt-2" placeholder="Street name / Landmark" name="landmark"
+                    id='landmark' value="">
+                  <input type="hidden" value="" id="addressvalue" name="addressvalue">
+                  <button type="submit" id="editbtn" class="btn bg-info w-100 mt-4 mb-0 text-light">Edit</button>
+              </div>
               </form>
-              <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalConfirmDelete">Delete</a>
             </div>
-          </span>
-
-    <!-- Confirm Delete Address -->
-    <div class="modal fade" id="EditAddressModal" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-body px-md-5">
-            <div class="col-lg-12 sec_div">
-              <h5>Edit Address</h5>
-              <form method="post">
-                {%csrf_token%}
-                <input type="text" class="form-control" placeholder="House /Floor No" name="floorno" id='floorno'
-                  value="">
-                <input type="text" class="form-control mt-2" placeholder="Street name / Landmark" name="landmark"
-                  id='landmark' value="">
-                <input type="hidden" value="" id="addressvalue" name="addressvalue">
-                <button type="submit" id="editbtn" class="btn bg-info w-100 mt-4 mb-0 text-light">Edit</button>
-            </div>
-            </form>
           </div>
         </div>
       </div>
-    </div>
 </div>
-</li>
 <hr class="mt-2">
 {%endfor%}
-
-
+</ul>
 <br>
 <br>
 </div>
-
-
-
-
-
 {% include "includes/footer.html" %}
-<!-- End of Modal Content -->
-
 {% endblock content %}
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
@@ -80,11 +70,10 @@
   $('.address').on('click', function () {
     let selected_add = this.id;
     document.getElementById('addressvalue').value = selected_add;
-    document.getElementById('inputid').value = selected_add;
+    // document.getElementById('inputid').value = selected_add;
     const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
     $.ajax({
       type: 'POST',
-      // url: '/app-view/my-addresses',
       data: {
         'data': selected_add,
         'csrfmiddlewaretoken': csrf,
@@ -94,11 +83,9 @@
         mydata = response.selected_address;
         document.getElementById('landmark').value = mydata[0]['lm'];
         document.getElementById('floorno').value = mydata[0]['rn'];
-
       }
     });
   });
-
   //Sending Selected Address Id 
   function SendAddressId() {
   };
@@ -108,5 +95,6 @@
 id='editloader'>
   </span>`
   });
+
 </script>
 {% endblock javascripts %}

@@ -290,8 +290,10 @@
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition, function (err) { alert(err) }, options);
+            $(".loader").fadeOut("slow")
         } else {
             x.innerHTML = "Geolocation is not supportt ed by this browser.";
+            $(".loader").fadeOut("slow");
         }
     }
     function showPosition(position) {
