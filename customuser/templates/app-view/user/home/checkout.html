@@ -620,9 +620,6 @@
     else {
         InProduct = JSON.parse(localStorage.getItem('input_prod'));
     }
-
-
-    console.log(InProduct)
     //Add Product into array 
     var count = 0;
     function AddProduct() {
@@ -666,7 +663,9 @@
 
     // Show Products on table
     var currentProducts = JSON.parse(localStorage.getItem('input_prod'));
+        if(currentProducts!=null){
     ShowProduct(currentProducts)
+    }
 
     function ShowProduct(InProduct) {
         document.getElementById('table_box').innerHTML = ' ';
@@ -770,14 +769,15 @@
             window.location = '/checkout';
         }
     }
-
     $('#continue_btn').click(function () {
         document.getElementById('continue_btn').innerHTML = `Processing..<span class="spinner-border" role="status" 
     id='sign_in_loader'>
   </span>`;
-  // send data array from input form 
-  var product_list = JSON.stringify(localStorage.getItem('input_prod'));  
-  document.getElementById('selected_products').value = product_list;
+        // send data array from input form 
+        var product_list = JSON.stringify(localStorage.getItem('input_prod'));
+        document.getElementById('selected_products').value = product_list;
+        localStorage.clear()
+
     });
     $('#add_button').click(function () {
         document.getElementById('add_button').innerHTML = `Adding..<span class="spinner-border" role="status" 
