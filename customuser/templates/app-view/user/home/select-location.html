@@ -95,6 +95,7 @@
     .main_start .img-box1 {
         height: 130px;
     }
+
     .main_start h4 {
         font-size: 13px;
         padding: 0px;
@@ -114,18 +115,22 @@
         padding-left: 10px;
         padding-right: 10px;
     }
+
     .main_start p {
         font-size: 15px;
         font-weight: 700;
         text-align: center;
     }
+
     .btn-block {
         background-color: #fff;
     }
+
     #pac-input:focus {
         border: 1px solid #000080 !important;
         outline: none;
     }
+
     @media screen and (max-width: 990px) {
         .div_img {
             display: none;
@@ -224,7 +229,7 @@
     </div>
     <!-- Button Modal -->
     <button type="button" class="btn btn-block mt-5 w-100" onclick="getLocation()">
-    <span id="change_by_name">Detect current location</span>
+        <span id="change_by_name">Detect current location</span>
         &nbsp;<span><img src="/media/icons/location.png" style="height: 15px;"></span></button>
 
     <!-- Modal Content -->
@@ -249,7 +254,7 @@
         </div>
         <div class="row" id='StoreList'>
             {% for i in new_list %}
-            <div class="card mx-auto my-2 align-items-center" >
+            <div class="card mx-auto my-2 align-items-center">
                 <div class="img-box">
                     <a href="/app-view/store-view/{{i.id}}/{{i.name}}/{{i.distance}}">
                         <img src="https://th.bing.com/th/id/OIP.H-QL_6Ujz1l0gPSmdV4i8AHaE8?pid=ImgDet&rs=1"
@@ -280,6 +285,9 @@
         $(".loader").fadeOut("slow")
     });
     var x = document.getElementById("demo");
+    var allowGeoRecall = true;
+    var countLocationAttempts = 0;
+
     function getLocation() {
         $(".loader").fadeIn("slow")
         var options = {
@@ -289,13 +297,22 @@
         };
 
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, function (err) { alert(err) }, options);
-            $(".loader").fadeOut("slow")
+            navigator.geolocation.getCurrentPosition(showPosition,positionError, options);
+            // $(".loader").fadeOut("slow")
         } else {
-            x.innerHTML = "Geolocation is not supportt ed by this browser.";
+            alert("Geolocation is not supportted by this device .");
             $(".loader").fadeOut("slow");
         }
     }
+    function positionError() {    
+        alert('Please allow permissions for location (GPS) .')
+         if(allowGeoRecall && countLocationAttempts < 5) {
+             countLocationAttempts += 1;
+             getLocation();
+         }
+     }
+
+
     function showPosition(position) {
         // Show Medical Stores with current location
         const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
@@ -314,7 +331,6 @@
             dataType: 'json',
             success: function (response) {
                 document.getElementById('hiddenarea').style.display = 'block';
-                $(".loader").fadeOut("slow")
                 document.getElementById('StoreList').innerHTML = ' ';
                 mydata = response.context;
                 for (var key in mydata) {
@@ -333,6 +349,8 @@
                             </div>`
                     if ($("#StoreList").empty) {
                         $("#StoreList").append(temp);
+                        $(".loader").fadeOut("slow");
+
                     }
                 }
             }
@@ -360,7 +378,7 @@
                 var long = place.geometry.location.lng()
                 var lat = place.geometry.location.lat()
                 const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
-               displayLocation(lat, long);
+                displayLocation(lat, long);
                 $.ajax({
                     type: 'POST',
                     url: '/detect-users-location',
@@ -400,7 +418,6 @@
             });
         });
     }
-
     //retrun City Or Ara name
     function displayLocation(latitude, longitude) {
         var geocoder;

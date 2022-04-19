@@ -111,19 +111,17 @@ def medical_store_view(request,myid,st_name,st_dist):
     store_user = data[0].store_user
     city_name = data[0].city
     address = data[0].address 
+    coord = {'lat':data[0].lat,'lon':data[0].lon}
     id_ = myid
-
     if request.method == 'POST':
         display_type = request.POST.get('is_conditions' or None)    
         myfile = request.FILES["image_file"] 
         user_id = request.user
         saved = Image(image=myfile,user=request.user,store_user=store_user)
         saved.save()
-
     else:
         pass
-
-    context =  {'name':name,'city_name':city_name,'address':address,'distance':distance,'myid':myid,'id_':id_}
+    context =  {'name':name,'city_name':city_name,'address':address,'distance':distance,'myid':myid,'id_':id_,'coord':json.dumps(coord)}
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -706,7 +704,6 @@ def MyAddresses(request):
 @login_required(redirect_field_name='next',login_url = '/login')
 def MyAddress(request,fname,lname):
     return render(request,'shops/myaddress.html')
-
 
 
 
