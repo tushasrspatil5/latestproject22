@@ -5,6 +5,7 @@ from django.db.models import indexes
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect ,HttpResponse
 from django.contrib.auth import authenticate, login
+from stripe import Order
 from customuser.models import user_type, User
 from django.shortcuts import render,HttpResponse ,redirect
 from django.views import generic
@@ -42,6 +43,9 @@ import razorpay
 import os
 from twilio.rest import Client
 from pytonik_time_ago.timeago import timeago
+import string    
+import random
+
 
 def Appview(request):
     templates = 'app-view/user/home/index.html'
@@ -246,7 +250,6 @@ def CheckOut(request):
         inputdata = request.POST.get('data')
         data = json.loads(inputdata)
         item_list.append(data)
-        print(item_list)
         return JsonResponse({'data':data,'item_list':item_list})
 
     if request.is_ajax() and request.POST.get('newaddress'):
@@ -314,8 +317,6 @@ def CheckOut(request):
         reciver = Prescription.objects.filter(id= pred_id)[0].reciver
     except:
         pass
-
-
     FullName = ''
     if Orders.objects.filter(c_username = request.user).exists():
         PersName = PersonalDetails.objects.filter(username = request.user)[0]
@@ -338,8 +339,6 @@ def CheckOut(request):
         pincode = '416101'
         items = ''
         new_inbox_items = json.loads(selected_products)
-        print(type(new_inbox_items))
-
         # Creating new_inbox_items 
         store_noti_1 = 'You have got request for medicines'
         if customername == '':   
@@ -358,6 +357,7 @@ def CheckOut(request):
             new_order.save()
         last_order = Orders.objects.filter(c_username=str(request.user)).last().id
         new_id = Orders.objects.filter(images_id = pred_id)[0].id
+        new_id = str(GenerateOrderId()) + str(new_id)
         Orders.objects.filter(images_id = pred_id).update(orderid = new_id)
         NotificationReminder(order_id = last_order).save()
         myurl = request.path
@@ -379,6 +379,12 @@ def CheckOut(request):
     except:          
         templates = 'user/home/checkout.html'
     return render(request,templates,context)
+
+def GenerateOrderId():
+    S = 10   
+    ran = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))    
+    order_id =str(ran)
+    return order_id
 
 def UsersNotifications(request):
     # Notifications for users
@@ -428,7 +434,6 @@ def UsersNotifications(request):
     context = {'messages_list':messages1}
     return render(request,templates,context)
 
-
 @login_required(redirect_field_name='next',login_url = '/login')
 def MyOrders(request):
     myorders = []
@@ -446,8 +451,7 @@ def MyOrders(request):
                         pass
                     else: 
                         ord.update(is_cancelled = True)
-                        # Calling Send Notification function to store ...
-                        
+                        # Calling Send Notification function to store ... 
             except:
                 pass
         data = Orders.objects.filter(c_username = str(request.user)).order_by('-date')[:5]
@@ -463,7 +467,6 @@ def MyOrders(request):
                 'is_cancelled':i.is_cancelled,
             }
             myorders.append(newdict)
-
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -472,7 +475,6 @@ def MyOrders(request):
     except:          
         url_path = 'user/home/myorder.html'
     return render(request,url_path,{ 'myorders':myorders})
-
 
 def OrderTracker(request,myid):
     data = Orders.objects.filter(id=myid)
@@ -486,7 +488,6 @@ def OrderTracker(request,myid):
         DeliveryDate = data.date.strftime("%b-%d-%Y") 
     else:
         DeliverName = None
-
         DeliverMobile = None
     images_data = ''        
     try:
@@ -542,7 +543,6 @@ def OrderTracker(request,myid):
     inbox_items = data.inbox_items
     prod_dict = {}
     prod_list = []
-
     if len(data.items) > 1:
         product_list = json.loads(data.items)
         for i in product_list:
@@ -553,12 +553,10 @@ def OrderTracker(request,myid):
                 'prod_qty':product_qty,
             }
             prod_list.append(prod_dict)
-
     Items_show = False
     items_dict = {}
     items_list = []
     inbox_items = json.loads(inbox_items)
-    print(inbox_items)
     if len(inbox_items) >= 1:
         Items_show = True
         prod_len = 0
@@ -594,89 +592,18 @@ def OrderTracker(request,myid):
         url_path = 'user/home/order-tracker.html'
     return render(request,url_path,params)
 
-def TrackOrderChange(request,myid):
-    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
-        data = Orders.objects.filter(id=myid)
-        data = data[0]
-        DeliverName = None
-        DeliverMobile = None
-        
-        if len(data.d_username) < 1:
-            if PersonalDetails.objects.filter(username = data.d_username).exists():
-                Obj = PersonalDetails.objects.filter(username = data.d_username)[0]
-                DeliverMobile = Obj.mob
-                DeliverName=str(Obj.fname) + str(" ") + str(Obj.lname)   
-        else:
-            DeliverName = data.d_username
-            DeliverMobile = PersonalDetails.objects.filter(username=data.d_username)[0].mob
-        if data.order_accept_status == 'accepted':
-            request_accepted = 'active'
-            order_status = 'active'
-            if NotificationReminder.objects.filter(order_id = myid)[0].first == False:
-                playsound('tones/notification_sound.mp3',False)
-                NotificationReminder.objects.filter(order_id = myid).update(first = True)
-        else:
-            order_status = " "
-            request_accepted = " "
-        if data.order_picked == True:
-            picked_order = 'active'
-            order_on_way = "active" 
-        else:
-            picked_order = " "
-            order_on_way = " " 
-        if data.is_parsel_uploaded == True:
-            if NotificationReminder.objects.filter(order_id = myid)[0].second == False:
-                playsound('tones/notification_sound.mp3',False)
-                NotificationReminder.objects.filter(order_id = myid).update(second = True)
-        
-            
-        if data.reached_location_status == True:
-            order_reached = 'active'
-            if NotificationReminder.objects.filter(order_id = myid)[0].third == False:
-                playsound('tones/notification_sound.mp3',False)
-                NotificationReminder.objects.filter(order_id = myid).update(third = True)
-        else:
-            order_reached = " "
-
-        if data.order_completed == True:
-            order_completed = 'active'
-            if NotificationReminder.objects.filter(order_id = myid)[0].fourth == False:
-                playsound('tones/notification_sound.mp3',False)
-                NotificationReminder.objects.filter(order_id = myid).update(fourth = True)
-           
-        else:
-            order_completed = " "
-        Order_objects = Orders.objects.filter(id=myid)
-        data_dict = {}
-        data_list = []
-
-        request_accepted = {'request_accepted':request_accepted}
-        picked_order = {"picked_order":picked_order}
-        order_reached = {'order_reached':order_reached}
-        order_completed = {'order_completed':order_completed}
-        deliver_name = {'deliver_name':DeliverName}
-        deliver_mob = {'deliver_mob':DeliverMobile}
-    
-        # data_list = json.dumps(data_list)
-        return JsonResponse({'picked_order':picked_order,'order_reached':order_reached,'deliver_mob':deliver_mob,
-        'order_completed':order_completed,'request_accepted':request_accepted,'DeliverName':DeliverName,'deliver_name':deliver_name,
-        },safe=False)
-    return render(request,'user/home/order-tracker.html')
-
-
 @login_required(redirect_field_name='next',login_url = '/login')
 def MyAddresses(request):
     sel_add_list = []
     if request.POST.get('confirmed_delete'):
         myid = request.POST.get('confirmed_delete')
-        print(myid)
         SavedAddress.objects.filter(id=myid).delete()
-
     if request.POST.get('addressvalue'):
         sel_id = request.POST.get('addressvalue')
         floorno = request.POST.get('floorno')
         landmark = request.POST.get('landmark')
         SavedAddress.objects.filter(id=sel_id).update(landmark = landmark, room_no = floorno)
+    
     if request.is_ajax():
         sel_id = request.POST.get('data')
         selected_address = SavedAddress.objects.filter(id=sel_id)
@@ -685,6 +612,7 @@ def MyAddresses(request):
         }
         sel_add_list.append(sel_add_dict)
         return JsonResponse({'selected_address':sel_add_list})
+    
     try:
         addresses = SavedAddress.objects.filter(username = str(request.user))
     except:
@@ -699,7 +627,6 @@ def MyAddresses(request):
     except:          
         templates = 'user/home/my-addresses.html'
     return render(request,templates,context)
-
 
 @login_required(redirect_field_name='next',login_url = '/login')
 def MyAddress(request,fname,lname):

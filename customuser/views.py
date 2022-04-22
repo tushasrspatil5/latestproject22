@@ -458,7 +458,6 @@ def UploadPrescriptions(request):
         return HttpResponse("Please login first")
     # return render(request,'shops/upload_prescription.html')                                   
 
-
 def image_upload(request):
     return render(request, 'index.html', context=context)
 
@@ -829,6 +828,7 @@ def get_users_notifications(request):
 
 @login_required(redirect_field_name='next',login_url = '/login')
 def notification_view(request):
+    myurl = request.path
     data = None
     latest_notification = None
     time = None
@@ -869,13 +869,12 @@ def notification_view(request):
                 # PlacedOrders.objects.filter(images = DataId).update(store_status = True)
                 # IsAccepted = PlacedOrders.objects.filter(images = DataId)[0]
                 # text = f"You have Rejected delivery request of {which_user}"
-                myurl = request.path
-                obj = myurl.split('/')
-                try:
-                    obj.index('app-view') 
-                    return redirect(f"/app-view/store-order-response/{DataId}")
-                except:        
-                    return redirect(f"/store-order-response/{DataId}")
+                # obj = myurl.split('/')
+                # try:
+                #     obj.index('app-view')
+                #     return redirect(f"/app-view/store-order-response/{DataId}")
+                # except:        
+                return redirect(f"/app-view/store-order-response/{DataId}")
             else:
                 user_noti_1 = 'We are not able to accept your request.  '
                 Orders.objects.filter(id=DataId).update(user_notification_1 = user_noti_1,order_accept_status='rejected')
@@ -943,7 +942,6 @@ def StoreNotifications(request):
                 'which_color':which_color,
             }
             messages1.append(my_dict)
-            
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -951,7 +949,6 @@ def StoreNotifications(request):
         templates = 'app-view/store/home/request.html'
     except:          
         templates = 'store/home/request.html'
-
     context = {'messages_list':messages1} 
     return render(request,templates,context)
 
@@ -961,7 +958,6 @@ def notification_view_details(request,current_user,myid):
     new_data = []
     text = ""
     if request.user.is_authenticated and type_obj.is_store==True:
-        # my_orders = Orders.objects.filter(d_username)
         order_details = Orders.objects.filter(id=myid)
         images_id = order_details[0].images_id
         for j in order_details:
@@ -988,7 +984,7 @@ def notification_view_details(request,current_user,myid):
             Items_show = False
         else:
             Items_show = True
-            
+
         cart_items = order_details[0].items 
         ResponStatus = order_details[0].order_accept_status
         Is_responsed = False
@@ -1041,7 +1037,6 @@ def notification_view_details(request,current_user,myid):
         'ResponStatus':ResponStatus, 'items_list':items_list,'cart_items':cart_items,
         'IsAccepted':IsAccepted,'Items_show':Items_show, 'images_data':images_data,
         'IsIns':IsIns,'instructions':instructions}
-    
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -1075,7 +1070,6 @@ def UsersNotificationDetails(request,current_user,myid):
             date = parsel.date.date()
             mixed = str(date) + str(time)
             time_ago = timeago(f"{str(date)} {str(time)}").ago
-
             parsel.date = time_ago
             Parsel_Details.append(parsel)
         Parsel_Details = Parsel_Details[0]
@@ -1150,7 +1144,8 @@ def MyProfile(request,fname,lname):
     except:          
         templates = 'user/home/profile.html'
     return render(request,templates,context)
-    
+
+@login_required(redirect_field_name='next',login_url = '/login')
 def AppMyProfile(request):
     if request.method == 'POST':
         fname = request.POST.get('fname')
@@ -1177,9 +1172,8 @@ def AppMyProfile(request):
     }
     templates = 'app-view/user/home/profile.html'
     return render(request,templates,context)
-    
 
-
+@login_required(redirect_field_name='next',login_url = '/login')
 def NewMyProfile(request):
     context = 'items'
     myurl = request.path
@@ -1214,7 +1208,6 @@ def ProductView(request,myid):
         "product":product,'desc':desc,'benefits':benefits,'use_directions':use_directions,
         'safety_info':safety_info,'ingradients':ingradients,'Item':Item,
         })
-
 
 #Delivery Requests for Delivery boy
 @login_required(redirect_field_name='next',login_url = '/login')
@@ -1444,11 +1437,8 @@ def RegisterDeliveryPartner(request):
     if request.method == 'POST':
         if request.POST.get('select_city'):
             select_city = request.POST.get('select_city')
-                
-           
         if request.FILES.get("adhar_doc"):
-            adhar_doc = request.FILES.get("adhar_doc")
-            
+            adhar_doc = request.FILES.get("adhar_doc")  
         if request.POST["src"]:
             image_path = request.POST["src"]  # src is the name of input attribute in your html file, this src value is set in javascript code
             image = NamedTemporaryFile()
@@ -1460,15 +1450,12 @@ def RegisterDeliveryPartner(request):
             image.name = name
         if request.POST.get('agree_conditions'):
             is_agree = request.POST.get('agree_conditions')
-
-        DeliveryPartner(username=str(request.user),city=select_city,selfie = image,adhar =adhar_doc).save()
-          
+        DeliveryPartner(username=str(request.user),city=select_city,selfie = image,adhar =adhar_doc).save()  
         try:
             obj.index('app-view') 
             return redirect('/app-view/home')  
         except:     
             return redirect('/')  
-        
     myurl = request.path
     obj = myurl.split('/')
     try:
@@ -1610,6 +1597,14 @@ def DeliveryPartnerResponse(request,myid):
     is_parsel_uploaded = ''
     is_order_confirmed = ''
     CurrrentOrder = Orders.objects.filter(id = myid)
+    # Store details 
+    store_details = {}
+    store_username = Shop.objects.get(store_user=CurrrentOrder[0].s_username)
+    store_details['name'] = store_username.name
+    store_details['address'] = store_username.address
+    store_details['lat'] = store_username.lat
+    store_details['lon'] = store_username.lon
+
     if request.POST.get('customer_otp'):
         customer_otp = request.POST.get('customer_otp')
         if customer_otp != CurrrentOrder[0].customer_otp:
@@ -1648,9 +1643,10 @@ def DeliveryPartnerResponse(request,myid):
     time = datetime.now()
     picked_time = time.strftime('%H:%M:%S')[:5]
     context = {'CurrrentOrder':CurrrentOrder[0],'is_order_confirmed':is_order_confirmed,'is_parsel_uploaded':is_parsel_uploaded,
-    'CustomerrName':CustomerrName,'picked_time':picked_time}
-    
-    return render(request,'deliver/home/delivery-partner-response.html',context)  
+    'CustomerrName':CustomerrName,'picked_time':picked_time,
+    'store_data':store_details,
+    'store_details':json.dumps(store_details)}
+    return render(request,'app-view/deliver/home/delivery-partner-response.html',context) 
 
 previus_id = [] 
 def GetDeliveryRequests(request):
@@ -1677,7 +1673,76 @@ def GetDeliveryRequests(request):
                 Orders.objects.filter(id=myid).update(is_timeup = True)
                 DeliveryRequests(request,myid)
     return render(request,'deliver/home/index.html')
-     
+
+def TrackOrderChange(request,myid):
+    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
+        data = Orders.objects.filter(id=myid)
+        data = data[0]
+        DeliverName = None
+        DeliverMobile = None
+        
+        if len(data.d_username) < 1:
+            if PersonalDetails.objects.filter(username = data.d_username).exists():
+                Obj = PersonalDetails.objects.filter(username = data.d_username)[0]
+                DeliverMobile = Obj.mob
+                DeliverName=str(Obj.fname) + str(" ") + str(Obj.lname)   
+        else:
+            DeliverName = data.d_username
+            DeliverMobile = PersonalDetails.objects.filter(username=data.d_username)[0].mob
+        if data.order_accept_status == 'accepted':
+            request_accepted = 'active'
+            order_status = 'active'
+            if NotificationReminder.objects.filter(order_id = myid)[0].first == False:
+                playsound('tones/notification_sound.mp3',False)
+                NotificationReminder.objects.filter(order_id = myid).update(first = True)
+        else:
+            order_status = " "
+            request_accepted = " "
+        if data.order_picked == True:
+            picked_order = 'active'
+            order_on_way = "active" 
+        else:
+            picked_order = " "
+            order_on_way = " " 
+        if data.is_parsel_uploaded == True:
+            if NotificationReminder.objects.filter(order_id = myid)[0].second == False:
+                playsound('tones/notification_sound.mp3',False)
+                NotificationReminder.objects.filter(order_id = myid).update(second = True)
+        
+            
+        if data.reached_location_status == True:
+            order_reached = 'active'
+            if NotificationReminder.objects.filter(order_id = myid)[0].third == False:
+                playsound('tones/notification_sound.mp3',False)
+                NotificationReminder.objects.filter(order_id = myid).update(third = True)
+        else:
+            order_reached = " "
+
+        if data.order_completed == True:
+            order_completed = 'active'
+            if NotificationReminder.objects.filter(order_id = myid)[0].fourth == False:
+                playsound('tones/notification_sound.mp3',False)
+                NotificationReminder.objects.filter(order_id = myid).update(fourth = True)
+           
+        else:
+            order_completed = " "
+        Order_objects = Orders.objects.filter(id=myid)
+        data_dict = {}
+        data_list = []
+
+        request_accepted = {'request_accepted':request_accepted}
+        picked_order = {"picked_order":picked_order}
+        order_reached = {'order_reached':order_reached}
+        order_completed = {'order_completed':order_completed}
+        deliver_name = {'deliver_name':DeliverName}
+        deliver_mob = {'deliver_mob':DeliverMobile}
+    
+        # data_list = json.dumps(data_list)
+        return JsonResponse({'picked_order':picked_order,'order_reached':order_reached,'deliver_mob':deliver_mob,
+        'order_completed':order_completed,'request_accepted':request_accepted,'DeliverName':DeliverName,'deliver_name':deliver_name,
+        },safe=False)
+    return render(request,'user/home/order-tracker.html')
+
 def countdown(t):
     time_completed = False
     while t:
@@ -1718,7 +1783,6 @@ def DetectCurrentLocation(request):
         new_list.sort(key=lambda x: x["distance"])
         return JsonResponse({'context':new_list})
     return render(request,'user/home/select-location.html')
-
 
 def GetData(request):
     if request.is_ajax():

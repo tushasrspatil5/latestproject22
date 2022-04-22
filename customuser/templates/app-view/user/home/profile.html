@@ -5,18 +5,21 @@
   .group-menu li {
     font-size: 13px;
   }
-  .list-group-item{
-    font-size:13px !important;
-    margin:0px;
-    padding:2px;
+
+  .list-group-item {
+    font-size: 13px !important;
+    margin: 0px;
+    padding: 2px;
   }
-  .menu_bar hr{
-    padding:0px !important;
-    margin:px;
+
+  .menu_bar hr {
+    padding: 0px !important;
+    margin: px;
   }
-  .menu_bar li:hover{
+
+  .menu_bar li:hover {
     background-color: #eee;
-    padding:6px;
+    padding: 6px;
   }
 </style>
 {% endblock stylesheets %}
@@ -40,7 +43,8 @@
         <div class="h-100 p-1">
           <h5 class="mb-1"> {{name}}</h5>
           <ul class="list-group">
-            <li class="list-group-item border-0 ps-0 pt-0 text-sm mb-0"><strong class="text-dark">Full Name:</strong> &nbsp;
+            <li class="list-group-item border-0 ps-0 pt-0 text-sm mb-0"><strong class="text-dark">Full Name:</strong>
+              &nbsp;
               {{name}}</li>
             <li class="list-group-item border-0 ps-0 text-sm mb-0"><strong class="text-dark">Mobile:</strong> &nbsp;
               {{mobile}}</li>
@@ -132,7 +136,7 @@
             <hr>
           </ul>
           <h6 class="text-uppercase text-body text-xs font-weight-bolder ms-3 mt-4 mb-3">Join With Us</h6>
-          <ul class="list-group">
+          <ul class="list-group menu_bar">
             <a href="/app-view/add-your-chemiest">
               <li class="text-body ms-3 text-truncate w-80 mb-0">
                 Add Chemist
@@ -143,6 +147,10 @@
               <li class="text-body ms-3 text-truncate w-80 ">
                 Delivery Partner
               </li>
+            </a>
+            <hr>
+            <a href="/logout">
+              <li class="text-body ms-3 text-truncate w-80 ">Logout</li>
             </a>
             <hr class="mb-3">
           </ul>
@@ -185,8 +193,8 @@
     <div class="modal-content">
       <div class="modal-body px-md-5">
         <div class="close-btn text-center">
-        <i type='button' class="fa fa-times" aria-hidden="true" data-bs-dismiss="modal" aria-label="Close"></i>
-      </div>
+          <i type='button' class="fa fa-times" aria-hidden="true" data-bs-dismiss="modal" aria-label="Close"></i>
+        </div>
         <div class="col-xl-8 order-xl-1">
           <div class="card">
             <div class="card-header align-items-center">
