@@ -50,7 +50,7 @@ def home(request):
         if user_type.objects.get(user=request.user).is_delivery == True:
            return redirect('/app-view/get-delivery-requests')
         elif user_type.objects.get(user=request.user).is_store == True:
-            return render(request,'store-notifications',context)
+            return redirect('/store-notifications')
         else:
             return render(request,'user/home/index.html',context)
     else:
@@ -64,11 +64,8 @@ def Appview(request):
             return render(request,'app-view/store-notifications')
         else:
             return render(request,'user/home/index.html')
-
     templates = 'app-view/user/home/index.html'
     return render(request,templates)
-
-
 
 def send_otp(mobile, otp):
     account_sid = "AC8c55da658680546cd2f069c440eb8629"
