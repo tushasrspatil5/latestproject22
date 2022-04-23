@@ -45,11 +45,9 @@ from twilio.rest import Client
 from pytonik_time_ago.timeago import timeago
 import string    
 import random
+client = razorpay.Client(auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
+razorpay_client = razorpay.Client(auth=(RAZORPAY_API_KEY, RAZORPAY_API_SECRET_KEY))
 
-
-def Appview(request):
-    templates = 'app-view/user/home/index.html'
-    return render(request,templates)
 
 def Select_Location_Store(request):
     context = {}
@@ -149,6 +147,9 @@ def upload(request,myid):
     store_user = current_data[0].store_user
     city_name = current_data[0].city
     address = current_data[0].address 
+    myurl = request.path
+    obj = myurl.split('/')
+
     if request.POST.get('PresItems'):
         list_id = list()
         images_list = list()
@@ -192,8 +193,13 @@ def upload(request,myid):
             new_data = Prescription(sender= request.user,reciver = store_user,
             image1=item[0],message = 'You have got request for medicines')
             new_data.save()
-        return redirect('/checkout')
-    
+
+        try:
+            obj.index('app-view') 
+            return redirect('/app-view/checkout')
+        except:          
+            return redirect('/checkout')
+
     # Upload images from gallary--
     elif request.method == 'POST':
         data = request.FILES.getlist("images")
@@ -223,8 +229,7 @@ def upload(request,myid):
             new_data = Prescription(sender= request.user,reciver = store_user,
             image1=data[0],desc = desc,message = 'You have got request for medicines')
             new_data.save()
-        myurl = request.path
-        obj = myurl.split('/')
+       
         try:
             obj.index('app-view') 
             return redirect('/app-view/checkout')
@@ -391,7 +396,7 @@ def UsersNotifications(request):
     type_obj = user_type.objects.get(user=request.user)
     if request.user.is_authenticated and type_obj.is_user==True:
         is_user = True
-        objs =  my_notif = Orders.objects.filter(c_username=request.user).order_by('-date')[:5]
+        objs =  my_notif = Orders.objects.filter(c_username=request.user).order_by('-date')
         messages1 = []
         my_dict = {}
         items = []
@@ -632,9 +637,61 @@ def MyAddresses(request):
 def MyAddress(request,fname,lname):
     return render(request,'shops/myaddress.html')
 
+def CustomerBilling(request,user_name,myid):
+    ToalAmount = []
+    if request.POST.get('payment_method'):
+        value = request.POST.get('payment_method')
+        customer_otp = GenerateOTP()
+        if value == 'cash':
+            time = datetime.now()
+            Orders.objects.filter(id=myid).update(payment_status='cod',
+            order_accept_time=time.strftime('%H:%M:%S'),customer_otp=customer_otp)
+            # DeliveryRequests(request,myid)
+            return redirect('/')
+    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
+        bill_image_store = []
+        if StoreBill.objects.filter(order_id=myid).exists():
+            item_amount = Orders.objects.filter(id=myid)[0].store_amount
+            delivery_charges = 10 
+            GST = 5
+            ToalAmount = int(item_amount) + delivery_charges + GST
+            Orders.objects.filter(id=myid).update(total_amount = ToalAmount)
+            bill_image_store1 =StoreBill.objects.filter(order_id=myid)
+            for j in bill_image_store1:
+                j.date = j.date  = j.date.strftime('%H:%M:%S')
+                bill_image_store.append(j)
+            bill_image_store = bill_image_store[-1]
+            CurrentOrder = Orders.objects.filter(id = myid)
+        
+        pers_details = PersonalDetails.objects.get(username = str(request.user))
+        customer_name = str(pers_details.fname) + str(pers_details.lname) 
+        customer_mobile = pers_details.mob
+        customer_email = pers_details.email
+        order_amount = ToalAmount * 100
+        order_currency = "INR"
+        payment_order = client.order.create(dict(amount=order_amount,currency=order_currency,payment_capture =1))
+        order_id = payment_order['id']
+        Ob = Orders.objects.filter(id=myid).update(razorpay_order_id =order_id)
+    context = {'api_key':RAZORPAY_API_KEY,'order_id':order_id,'customer_name':customer_name,
+    'customer_mobile':customer_mobile,'customer_email':customer_email,
+    'bill_image_store':bill_image_store,'ToalAmount':ToalAmount,'delivery_charges':delivery_charges,
+    'GST':GST,}
+    myurl = request.path
+    obj = myurl.split('/')
+    try:
+        obj.index('app-view') 
+        templates = 'app-view/user/home/billing_page.html'
+    except:          
+        templates = 'user/home/billing_page.html'
 
-
-
+    return render(request,templates,context)
+def GenerateOTP():
+    digits = "0123456789"
+    OTP = ""
+    for i in range(4) :
+        OTP += digits[math.floor(random.random() * 10)]
+    return OTP
+  
 
 
 

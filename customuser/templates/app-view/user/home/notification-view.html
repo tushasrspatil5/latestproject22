@@ -305,9 +305,8 @@
                     <button class='btn btn-danger ml-3' style='font-size:12px;'> See other stores</button></a>
                   <p>
                     {%elif UsersNotifications.is_bill_uploaded == True%}
-
                     {%if UsersNotifications.payment_status == 'not_responded' %}
-                    <a href='/customers-billing-page/{{request.user}}/{{myid}}'>
+                    <a href='/app-view/customers-billing-page/{{request.user}}/{{myid}}'>
                       <span class='btn btn-outline payment_details''> Go to Payment details</span></a>
                 </a>
                 {%endif%}

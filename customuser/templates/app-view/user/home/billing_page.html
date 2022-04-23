@@ -1,5 +1,4 @@
-{% extends 'layouts/base.html' %}
-
+{% extends 'app-view/user/layouts/base.html' %}
 {% block title %} Deliver-Requests {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
@@ -237,14 +236,17 @@
         border-radius: 50%;
         background: white;
     }
+
     .img-box img {
         max-width: 220px;
         height: 170px;
     }
-    .check-btn1{
-        margin-left: 10%;padding:5px;
+
+    .check-btn1 {
+        margin-left: 10%;
+        padding: 5px;
     }
-    
+
     @media screen and (max-width: 990px) {}
 </style>
 {% endblock stylesheets %}
@@ -271,7 +273,7 @@
                     </tr>
                 </tbody>
             </table>
-            <span id='see_details' onclick='ShowTable_2()'>SEE DETAILS</span>
+            <span id='see_details' onclick='ShowTable_2()' type="button">SEE DETAILS</span>
             <hr>
         </div>
         <div id='table_2' style='display:none;'>
@@ -307,21 +309,21 @@
                 <div class='pay_on_delivery' style="margin:0px;">
                     <P>&nbsp; &nbsp;PAY ON DELIVERY</P>
                     <div class="check-btn1">
-                    <div class="form-check">
+                        <div class="form-check">
                             <input type="radio" class="fa form-check-input" value='cash' id='option_1'
-                                name="groupOfMaterialRadios" >
+                                name="groupOfMaterialRadios">
                             <label class="form-check-label" for="materialGroupExample1">Pay on Cash</label>
                         </div>
                     </div>
                 </div>
                 <P class='Pay_with_card' style="margin:0px;">&nbsp; &nbsp;Online Payment</P>
-                    <div class="check-btn1">
+                <div class="check-btn1">
                     <div class="form-check">
-                        <input type="radio" class="fa form-check-input" 
-                        name="groupOfMaterialRadios" value='online' id='option_2'>
+                        <input type="radio" class="fa form-check-input" name="groupOfMaterialRadios" value='online'
+                            id='option_2'>
                         <label class="form-check-label" for="materialGroupExample2">Pay Online</label>
                     </div>
-                    </div>
+                </div>
                 <hr style="margin:2px;">
             </div>
             <form method='post'>
@@ -342,7 +344,6 @@
 <hr class="line1">
 {% include "includes/footer.html" %}
 </div>
-
 {% endblock content %}
 <!-- Specific JS goes HERE -->
 {% block javascripts %}
@@ -355,20 +356,20 @@
     }
 
 
-$('.fa').on('click', function (){
-    document.getElementById('conti_btn').classList.add('bg-gradient-success');
-}
-);
+    $('.fa').on('click', function () {
+        document.getElementById('conti_btn').classList.add('bg-gradient-success');
+    }
+    );
 
 
-//Get Clicked Value
-var i;
-for (i = 1; i < 4; i++) {
-$('#option_' + i).on('click', function () {
-    var item_value = this.value;   
-    document.getElementById('payment_method').value = item_value;
-});
-}
+    //Get Clicked Value
+    var i;
+    for (i = 1; i < 4; i++) {
+        $('#option_' + i).on('click', function () {
+            var item_value = this.value;
+            document.getElementById('payment_method').value = item_value;
+        });
+    }
 
 </script>
 

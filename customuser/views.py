@@ -45,78 +45,30 @@ from pytonik_time_ago.timeago import timeago
 # import datetime
 
 def home(request): 
-    # product = []
-    # list_ = Product.objects.all()
-    # for i in list_:
-    #     i.product_name = i.product_name[:25]
-    #     product.append(i)
-    # new_list = []
-    # new_list = []
-    # city_names = []
-    # placeholder_city = ""
-    # if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
-    #     new_list = Shop.objects.all()
-    #     new_list = list()
-    #     city_names = list()
-    #     if request.user.is_authenticated:
-    #         uname = request.user
-    #         current_user = PersonalDetails.objects.filter(username= uname)
-    #         city= str(current_user[0].city)
-    #         address=str(current_user[0].address)   
-    #         city_input = city
-    #         ob = Cities.objects.all()
-    #         current_city_dict = {}
-    #         current_city = list()
-    #         for j in ob:
-    #             if j.city_name.lower() == city_input.lower():
-    #                 current_city_dict = {
-    #                 'city_name':j.city_name,
-    #                 'state':j.state,
-    #                 }
-    #                 current_city.append(current_city_dict)  
-    #         geolocator = Nominatim(user_agent="my_user_agent")
-    #         country = 'india'
-    #         state = current_city[0]['state']
-    #         loc = geolocator.geocode(city+','+ country + ',' + state)
-    #         lat1 = loc.latitude
-    #         lon1 = loc.longitude
-    #         ob = Shop.objects.all()
-    #         my_list = {}
-    #         new_list = list()
-    #         for i in ob:
-    #             lon2 = i.lon
-    #             lat2 = i.lat 
-    #             theta = lon1-lon2
-    #             dist = math.sin(math.radians(lat1)) * math.sin(math.radians(lat2)) + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.cos(math.radians(theta))
-    #             dist = math.acos(dist)
-    #             dist = math.degrees(dist)
-    #             miles = dist * 60 * 1.1515
-    #             distance = miles * 1.609344
-    #             distance = round(distance, 1)
-    #             my_list= {
-    #             'name':i.name,
-    #             'city':i.city,
-    #             'distance':distance,
-    #             'address':i.address,
-    #             'id':i.pk,
-    #             }
-    #             new_list.append(my_list)
-    #         new_list.sort(key=lambda x: x["distance"])
-    #         placeholder_city = address
-    #     else:
-    #         placeholder_city = 'Search for location'
-    # # return render(request,'shops/home.html'
-    # context = {'new_list':new_list,'product':product,'city_names':city_names,'placeholder_city':placeholder_city} 
     context = {}
     if request.user.is_authenticated and user_type.objects.filter(user=request.user).exists():
         if user_type.objects.get(user=request.user).is_delivery == True:
-            return render(request,'deliver/home/index.html',context) 
+           return redirect('/app-view/get-delivery-requests')
         elif user_type.objects.get(user=request.user).is_store == True:
-            return render(request,'store/home/index.html',context)
+            return render(request,'store-notifications',context)
         else:
             return render(request,'user/home/index.html',context)
     else:
         return render(request,'user/home/index.html',context)
+
+def Appview(request):
+    if request.user.is_authenticated and user_type.objects.filter(user=request.user).exists():
+        if user_type.objects.get(user=request.user).is_delivery == True:
+            return redirect('/app-view/get-delivery-requests')
+        elif user_type.objects.get(user=request.user).is_store == True:
+            return render(request,'app-view/store-notifications')
+        else:
+            return render(request,'user/home/index.html')
+
+    templates = 'app-view/user/home/index.html'
+    return render(request,templates)
+
+
 
 def send_otp(mobile, otp):
     account_sid = "AC8c55da658680546cd2f069c440eb8629"
@@ -743,9 +695,11 @@ def Send_Notification(request):
 def show_notifications(request,user_name):
     return render(request,'shops/notificationview.html')
 
+# for website
 def get_users_notifications(request):
     is_user = False
     is_store = False
+
     # Notifications for Stores
     new_data = None
     type_obj = user_type.objects.get(user=request.user)
@@ -1253,9 +1207,8 @@ def DeliveryStatus(request,myid):
                     'store_name':shop.name,
                     'storeaddress':shop.address,
                     'OrderId':OrderId,
-                }
+                    }
                 StoreAddress.append(CurrentDict)
-
         CustomerDict = {}
         CustomerAddress = []
         PersDetails = PersonalDetails.objects.filter(username=CurrrentOrder[0].c_username)[0]
@@ -1267,7 +1220,7 @@ def DeliveryStatus(request,myid):
             'amount':detail.price,
             }
             CustomerAddress.append(CustomerDict)
-
+            
         #cash to be collected by delivery partner
         if CurrrentOrder[0].payment_completed == True:
             collect_cash = 0
@@ -1320,7 +1273,6 @@ def DeliveryStatus(request,myid):
     params = {'StoreAddress':StoreAddress,'CustomerAddress':CustomerAddress,
     'collect_cash':collect_cash,'CurrentDelivery':CurrrentOrder[0]}
     return render(request,'shops/delivery-status.html',params)
-
 
 def StoreResponse(request,myid):
     OrdersObj1 = Orders.objects.filter(id=myid)
@@ -1383,48 +1335,6 @@ def StoreResponse(request,myid):
         url_path = 'store/home/response.html'
     return render(request,url_path,params)
 
-def CustomerBilling(request,user_name,myid):
-    ToalAmount = []
-    if request.POST.get('payment_method'):
-        value = request.POST.get('payment_method')
-        customer_otp = GenerateOTP()
-        if value == 'cash':
-            time = datetime.now()
-            Orders.objects.filter(id=myid).update(payment_status='cod',
-            order_accept_time=time.strftime('%H:%M:%S'),customer_otp=customer_otp)
-            DeliveryRequests(request,myid)
-            return redirect('/')
-    if request.user.is_authenticated and user_type.objects.get(user=request.user).is_user==True:
-        bill_image_store = []
-        if StoreBill.objects.filter(order_id=myid).exists():
-            item_amount = Orders.objects.filter(id=myid)[0].store_amount
-            delivery_charges = 10 
-            GST = 5
-            ToalAmount = int(item_amount) + delivery_charges + GST
-            Orders.objects.filter(id=myid).update(total_amount = ToalAmount)
-            bill_image_store1 =StoreBill.objects.filter(order_id=myid)
-            for j in bill_image_store1:
-                j.date = j.date  = j.date.strftime('%H:%M:%S')
-                bill_image_store.append(j)
-            bill_image_store = bill_image_store[-1]
-            CurrentOrder = Orders.objects.filter(id = myid)
-        
-        pers_details = PersonalDetails.objects.get(username = str(request.user))
-        customer_name = str(pers_details.fname) + str(pers_details.lname) 
-        customer_mobile = pers_details.mob
-        customer_email = pers_details.email
-        order_amount = ToalAmount * 100
-        order_currency = "INR"
-        payment_order = client.order.create(dict(amount=order_amount,currency=order_currency,payment_capture =1))
-        order_id = payment_order['id']
-        Ob = Orders.objects.filter(id=myid).update(razorpay_order_id =order_id)
-    context = {'api_key':RAZORPAY_API_KEY,'order_id':order_id,'customer_name':customer_name,
-    'customer_mobile':customer_mobile,'customer_email':customer_email,
-    'bill_image_store':bill_image_store,'ToalAmount':ToalAmount,'delivery_charges':delivery_charges,
-    'GST':GST,}
-
-    return render(request,'user/home/billing_page.html',context)
-   
 def GenerateOTP():
     digits = "0123456789"
     OTP = ""

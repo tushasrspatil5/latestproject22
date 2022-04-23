@@ -1,5 +1,4 @@
 {% extends 'app-view/deliver/layouts/base.html' %}
-
 {% block title %} Delivery ID - {% endblock title %}
 
 <!-- Specific CSS goes HERE -->
@@ -8,7 +7,6 @@
     html {
         background-color: #eee;
     }
-
     #pickupotp {
         border-width: 0.3px !important;
         width: 100%;
@@ -38,7 +36,6 @@
         outline: none;
         font-weight: 500;
     }
-
     #proceed:hover {
         border: none;
         background: #DCDCDC;
@@ -282,6 +279,7 @@
         border: 1px solid #000080;
         color: #fff;
     }
+
     .loader {
         position: fixed;
         z-index: 99;
@@ -368,7 +366,8 @@
     <br>
     <div class="track">
         <div class="step active" id='order_completed'>
-            <span class="icon"><i class="fa fa-check"></i>
+            <span class="icon">
+                <i class="fa fa-check"></i>
                 <div class='track1'>
                 </div>
             </span>
@@ -426,7 +425,6 @@
 {%endif%}
 
 {%if not CurrrentOrder.reached_location_status and CurrrentOrder.order_picked%}
-
 <div class="numbers mx-3 mt-3 p-3 border">
     <p class="font-weight-bolder mb-0">{{CustomerrName}}</p>
     <h5 class="mb-0 text-sm mb-0 text-capitalize font-weight-bold">{{CurrrentOrder.address}}</h5>
@@ -448,9 +446,7 @@
     </div>
 </form>
 {%endif%}
-
 {%if CurrrentOrder.reached_location_status %}
-
 <div class="numbers mx-3 mt-3 p-3 border">
     <p class="font-weight-bolder mb-0">{{CustomerrName}}</p>
     <h5 class="mb-0 text-sm mb-0 text-capitalize font-weight-bold">{{CurrrentOrder.address}}</h5>

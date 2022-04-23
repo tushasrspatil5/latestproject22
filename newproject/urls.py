@@ -58,7 +58,7 @@ urlpatterns = [
     path('order-tracker/<int:myid>',customers.OrderTracker,name='order-tracker'),
     path('tracker-order-change/<int:myid>',views.TrackOrderChange,name='TrackOrderChange'),
     path('store-order-response/<int:myid>',views.StoreResponse,name='store-order-response'), 
-    path('customers-billing-page/<str:user_name>/<int:myid>',views.CustomerBilling,name='CustomerBilling'),
+    path('customers-billing-page/<str:user_name>/<int:myid>',customers.CustomerBilling,name='CustomerBilling'),
     path('get-delivery-requests',views.DeliveryRequests,name='get-delivery-requests'),
     path('check-all-notifacations',views.CheckNOfitication,name='check-all-notifacations'),
     path('register-delivery-partner',views.RegisterDeliveryPartner, name='register-delivery-partner'),
@@ -68,7 +68,7 @@ urlpatterns = [
     path('payment-success',views.PaymentSuccess,name='payment-success'),
 
     # Profile ---
-    path('users/<str:fname>-<str:lname>/profile',views.MyProfile,name='MyProfile'),
+    path('users/<str:fname>-<str:lname>/profile',views.MyProfile,name='MyProfile'), 
     path('users/myprofile',views.NewMyProfile,name='NewMyProfile'),
     path('my-addresses',customers.MyAddresses,name='app-view/my-addresses'),
     path('users/<str:fname>-<str:lname>/profile/my-addresses',customers.MyAddress,name='MyAddress'),
@@ -88,7 +88,7 @@ urlpatterns = [
 
     # Application View 
     # For User
-    path('app-view/home',customers.Appview,name='app-view/home'),
+    path('app-view/home',views.Appview,name='app-view/home'),
     path('app-view/home/select-location',customers.Select_Location_Store,name='Select_Location_Store'),
     path('app-view/store-view/<int:myid>/<str:st_name>/<str:st_dist>',customers.medical_store_view, name='medical_store_view'),
     path('app-view/medical-store-view/<int:myid>/upload-prescriptions',customers.upload, name = 'medical_store_view'),
@@ -101,6 +101,8 @@ urlpatterns = [
     path('app-view/my-addresses',customers.MyAddresses,name='app-view/my-addresses'),
     path('app-view/register-delivery-partner',views.RegisterDeliveryPartner, name='register-delivery-partner'),
     path('app-view/add-your-chemiest',views.AddYourChemist,name='add-your-chemiest'),
+    path('app-view/customers-billing-page/<str:user_name>/<int:myid>',customers.CustomerBilling,name='CustomerBilling'),
+
     #For Store
     path('app-view/store-notifications',views.StoreNotifications,name='store-notifications'),
     path('store-notification/details/<str:current_user>/<int:myid>',views.notification_view_details,name="notification_view_details"),
