@@ -311,7 +311,7 @@
                     {{store_data.address}}</h5>
                 <p class="mb-0">Order ID:&nbsp;Ftz0034</p>
 
-                <button onclick="GetDirection()" class="btn btn-outline mt-1" id="getdirection">Get
+                <button onclick="GetDirectionStore()" class="btn btn-outline mt-1" id="getdirection">Get
                     Direction&nbsp;&nbsp;
                     <i class="fa fa-location-arrow ml-1" aria-hidden="true"></i></button>
             </div>
@@ -435,6 +435,9 @@
         <p class="mb-0 text-sm mb-0 text-capitalize font-weight-bold">Amount to be paid:
             Rs.{{CurrrentOrder.total_amount}}</p>
         {%endif%}
+        <button onclick="GetDirectionCustomer()" class="btn btn-outline mt-2" id="getdirection">Get
+            Direction&nbsp;&nbsp;
+        <i class="fa fa-location-arrow ml-1" aria-hidden="true"></i></button>
     </div>
 </div>
 <form method="post">
@@ -541,10 +544,10 @@
     $(window).load(function () {
         $(".loader").fadeOut("slow")
     });
-    var x = document.getElementById("demo");
+    //Track Directions for Store Location
     var allowGeoRecall = true;
     var countLocationAttempts = 0;
-    function GetDirection() {
+    function GetDirectionStore() {
         $(".loader").fadeIn("slow")
         var options = {
             enableHighAccuracy: true,
@@ -552,7 +555,7 @@
             maximumAge: 0
         };
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, positionError, options);
+            navigator.geolocation.getCurrentPosition(showStorePosition, positionError, options);
         } else {
             alert("Geolocation is not supportted by this device .");
             $(".loader").fadeOut("slow");
@@ -562,16 +565,48 @@
         alert('Please allow permissions for location (GPS) .')
         if (allowGeoRecall && countLocationAttempts < 5) {
             countLocationAttempts += 1;
-            getLocation();
         }
     }
-    function showPosition(position) {
+    function showStorePosition(position) {
         $(".loader").fadeOut("slow")
         const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
         var lat = position.coords.latitude;
         var lon = position.coords.longitude
         var store_coord = JSON.parse("{{store_details|escapejs}}");
         var url = "https://www.google.com/maps/dir/" + lat + "," + lon + "/" + store_coord.lat + "," + store_coord.lon + ""
+        window.open(url, '_blank');
+    }
+
+    //Trac Directions for Customers location
+    var allowGeoRecall = true;
+    var countLocationAttempts = 0;
+    function GetDirectionCustomer() {
+        $(".loader").fadeIn("slow")
+        var options = {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        };
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showCustomerPosition, positionError, options);
+        } else {
+            alert("Geolocation is not supportted by this device .");
+            $(".loader").fadeOut("slow");
+        }
+    }
+    function positionError() {
+        alert('Please allow permissions for location (GPS) .')
+        if (allowGeoRecall && countLocationAttempts < 5) {
+            countLocationAttempts += 1;
+        }
+    }
+    function showCustomerPosition(position) {
+        $(".loader").fadeOut("slow")
+        const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+        var lat = position.coords.latitude;
+        var lon = position.coords.longitude
+        var customer_coord = JSON.parse("{{customer_details|escapejs}}");
+        var url = "https://www.google.com/maps/dir/" + lat + "," + lon + "/" + customer_coord.lat + "," + customer_coord.lon + ""
         window.open(url, '_blank');
     }
 </script>

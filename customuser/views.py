@@ -42,8 +42,8 @@ import razorpay
 import os
 from twilio.rest import Client
 from pytonik_time_ago.timeago import timeago
-# import datetime
 
+# import datetime
 def home(request): 
     context = {}
     if request.user.is_authenticated and user_type.objects.filter(user=request.user).exists():
@@ -61,11 +61,9 @@ def Appview(request):
         if user_type.objects.get(user=request.user).is_delivery == True:
             return redirect('/app-view/get-delivery-requests')
         elif user_type.objects.get(user=request.user).is_store == True:
-            return render(request,'app-view/store-notifications')
+            return redirect('/app-view/store-notifications')
         else:
-            return render(request,'user/home/index.html')
-    templates = 'app-view/user/home/index.html'
-    return render(request,templates)
+            return render(request,'app-view/user/home/index.html')
 
 def send_otp(mobile, otp):
     account_sid = "AC8c55da658680546cd2f069c440eb8629"
@@ -1547,12 +1545,18 @@ def DeliveryPartnerResponse(request,myid):
     if PersonalDetails.objects.filter(username = CurrrentOrder[0].c_username).exists():
         Obj = PersonalDetails.objects.filter(username = CurrrentOrder[0].c_username)[0]
         CustomerrName = str(Obj.fname) + str(" ") + str(Obj.lname)
+        customer_details = {}
+        store_username = Shop.objects.get(store_user=CurrrentOrder[0].s_username)
+        customer_details['lat'] = Obj.lat
+        customer_details['lon'] = Obj.lon
+
     time = datetime.now()
     picked_time = time.strftime('%H:%M:%S')[:5]
     context = {'CurrrentOrder':CurrrentOrder[0],'is_order_confirmed':is_order_confirmed,'is_parsel_uploaded':is_parsel_uploaded,
     'CustomerrName':CustomerrName,'picked_time':picked_time,
     'store_data':store_details,
-    'store_details':json.dumps(store_details)}
+    'store_details':json.dumps(store_details),
+    'customer_details':json.dumps(customer_details)}
     return render(request,'app-view/deliver/home/delivery-partner-response.html',context) 
 
 previus_id = [] 
