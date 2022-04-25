@@ -1,6 +1,5 @@
 {% extends 'app-view/user/layouts/base.html' %}
 {% block title %} Select-Location {% endblock title %}
-
 <!-- Specific CSS goes HERE -->
 {% block stylesheets %}
 <style>
@@ -89,7 +88,7 @@
     .main_start .card {
         height: 14rem;
         border: 1px solid #000080;
-        width: 9rem;
+        width: 10rem;
     }
 
     .main_start .img-box1 {
@@ -231,7 +230,6 @@
     <button type="button" class="btn btn-block mt-5 w-100" onclick="getLocation()">
         <span id="change_by_name">Detect current location</span>
         &nbsp;<span><img src="/media/icons/location.png" style="height: 15px;"></span></button>
-
     <!-- Modal Content -->
     <form>
         {%csrf_token%}
@@ -297,20 +295,20 @@
         };
 
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition,positionError, options);
+            navigator.geolocation.getCurrentPosition(showPosition, positionError, options);
             // $(".loader").fadeOut("slow")
         } else {
             alert("Geolocation is not supportted by this device .");
             $(".loader").fadeOut("slow");
         }
     }
-    function positionError() {    
+    function positionError() {
         alert('Please allow permissions for location (GPS) .')
-         if(allowGeoRecall && countLocationAttempts < 5) {
-             countLocationAttempts += 1;
-             getLocation();
-         }
-     }
+        if (allowGeoRecall && countLocationAttempts < 5) {
+            countLocationAttempts += 1;
+            getLocation();
+        }
+    }
 
 
     function showPosition(position) {
@@ -447,9 +445,4 @@
         );
     }
 </script>
-
-
-
-
-
 {% endblock javascripts %}

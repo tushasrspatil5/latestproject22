@@ -149,9 +149,15 @@
               </li>
             </a>
             <hr>
+            {%if request.user.is_authenticated%}
             <a href="/logout">
               <li class="text-body ms-3 text-truncate w-80 ">Logout</li>
             </a>
+            {%else%}
+            <a href="/login">
+              <li class="text-body ms-3 text-truncate w-80 ">Login</li>
+            </a>
+            {%endif%}
             <hr class="mb-3">
           </ul>
         </div>

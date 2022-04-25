@@ -392,23 +392,19 @@
     .table-bordered thead td {
         border-bottom-width: 2px;
     }
-
     .table-borderless th,
     .table-borderless td,
     .table-borderless thead th,
     .table-borderless tbody+tbody {
         border: 0;
     }
-
     .table-striped tbody tr:nth-of-type(odd) {
         background-color: rgba(246, 249, 252, 0.3);
     }
-
     .table-hover tbody tr:hover {
         color: #525f7f;
         background-color: #f6f9fc;
     }
-
     .table-primary,
     .table-primary>th,
     .table-primary>td {
@@ -474,6 +470,12 @@
         margin-left: 0px !important;
         padding-left: 0px !important;
     }
+    #modalAddProduct{
+        position: relative;
+        top:0%;
+        width: 100% !important;
+       
+    }
 </style>
 {% endblock stylesheets %}
 {% block content %}
@@ -484,8 +486,7 @@
     <button type="button" class="btn btn-block bg-gradient-info mb-3 btn_1 mt-5" data-bs-toggle="modal"
         data-bs-target="#modalAddProduct">Add Products</button>
     <!-- Modal Content -->
-    <div class="modal fade" id="modalAddProduct" tabindex="-1" role="dialog" aria-hidden="true"
-        style="position: absolute;width: 100%;height:100%;bottom:0px;">
+    <div class="modal fade" id="modalAddProduct" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <i type='button' class="fa fa-times" aria-hidden="true" data-bs-dismiss="modal" aria-label="Close"></i>

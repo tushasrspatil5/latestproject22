@@ -20,6 +20,12 @@
     color: blue;
     text-align: center;
   }
+  input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 </style>
 {% endblock stylesheets %}
 {% block content %}
@@ -43,7 +49,8 @@
                 <form role="form" method="POST" id="form">
                   {% csrf_token %}
                   <div class="mb-3">
-                    <input type="phone" class="form-control" placeholder="Mobile Number" aria-label="phone"
+                    <input type="number" class="form-control" placeholder="Mobile Number" aria-label="phone" 
+                    pattern="[0-9]*" inputmode="numeric"
                       aria-describedby="phone" name="mobile" id="mobile" required>
                   </div>
                   <div class="form-check form-switch">

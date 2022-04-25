@@ -18,6 +18,12 @@
        color:blue;
         text-align: center;
   }
+  input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 </style>
 {% endblock stylesheets %}
 {% block content %}
@@ -41,8 +47,8 @@
                 <form role="form" method="POST" id="form">
                   {% csrf_token %}
                   <div class="mb-3">
-                    <input type="phone" class="form-control" placeholder="Enter OTP" aria-label="phone"
-                      aria-describedby="phone" name="otp" required>
+                    <input type="number" class="form-control" placeholder="Enter OTP" aria-label="phone"
+                    pattern="[0-9]*" inputmode="numeric" aria-describedby="phone" name="otp" required>
                   </div>
                   <div class="text-center" id='submit-div'>
                     <button type="submit" class="btn bg-info w-100 mt-4 mb-0 text-light" id='submit_btn'>Submit</button>
